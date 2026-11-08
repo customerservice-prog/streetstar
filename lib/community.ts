@@ -47,7 +47,11 @@ export function sameOrigin(req: NextRequest): boolean {
   const origin = req.headers.get("origin");
   if (!origin) return true;
   try {
-    return new URL(origin).host === req.nextUrl.host;
+    // Next.js may reconstruct req.nextUrl from the internal bind host
+    // (0.0.0.0/localhost). Browser security checks must use the HTTP Host
+    // of the actual request instead. Browsers cannot forge Host headers.
+    const host = req.headers.get("host");
+    return Boolean(host && new URL(origin).host.toLowerCase() === host.toLowerCase());
   } catch { return false; }
 }
 
