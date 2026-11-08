@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="600" viewBox="0 0 960 600" role="img" aria-label="Abstract music studio artwork">
+<defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#080b17"/><stop offset=".53" stop-color="#20203d"/><stop offset="1" stop-color="#101513"/></linearGradient><radialGradient id="a"><stop stop-color="#b7f35b" stop-opacity=".42"/><stop offset="1" stop-color="#b7f35b" stop-opacity="0"/></radialGradient><pattern id="lines" width="35" height="35" patternUnits="userSpaceOnUse"><path d="M35 0H0V35" fill="none" stroke="#ffffff" stroke-opacity=".045"/></pattern></defs>
+<rect width="960" height="600" fill="url(#g)"/><rect width="960" height="600" fill="url(#lines)"/><circle cx="760" cy="150" r="320" fill="url(#a)"/>
+<path d="M0 490C220 440 360 540 550 470S800 410 960 475V600H0Z" fill="#080b11" opacity=".72"/>
+<g transform="translate(485 300)">
+<circle r="201" stroke="#d7fc56" stroke-opacity=".3" stroke-width="2" fill="#151a23"/><circle r="169" stroke="#4b6262" stroke-width="21" fill="none"/><circle r="125" stroke="#d7fc56" stroke-opacity=".2" stroke-width="1" fill="none"/><circle r="49" fill="#d7fc56"/><circle r="17" fill="#17191e"/>
+<path d="M-142 -95Q-84 -158 4 -162" stroke="#f9fcf3" stroke-opacity=".55" stroke-width="3" fill="none"/><path d="M103 129Q165 68 166 -17" stroke="#f9fcf3" stroke-opacity=".4" stroke-width="3" fill="none"/></g>
+<g fill="none" stroke="#d7fc56" stroke-width="7" stroke-linecap="round" opacity=".78"><path d="M44 317v-35m27 80V237m27 135V211m27 153V239m27 87v-53m27 119V190m27 151v-89m27 92v-87"/><path d="M755 318v-45m27 100V226m27 135V242m27 151V199m27 144v-95m27 101v-82"/></g>
+<text x="40" y="70" fill="#d7fc56" font-family="Arial,sans-serif" font-size="22" font-weight="700" letter-spacing="7">STREETSTAR</text><text x="42" y="535" fill="#fff" font-family="Arial,sans-serif" font-size="39" font-weight="900" letter-spacing="2">BEHIND THE BEAT</text>
+</svg>
