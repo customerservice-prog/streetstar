@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, CalendarDays, ExternalLink, Share2, Star } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CalendarDays, ExternalLink, MessageSquare, Star } from "lucide-react";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoCard } from "@/components/video-card";
 import { getStories } from "@/lib/db";
 import { storyDate } from "@/lib/content";
 import { ShareButton } from "@/components/share-button";
+import { VideoCommunity } from "@/components/video-community";
 
 export const dynamic = "force-dynamic";
 
@@ -34,9 +35,10 @@ export default async function WatchPage({ params }: Props) {
           <h1>{story.title}</h1>
           <div className="watch-meta"><span>{story.artist || "StreetStar"}</span><span>•</span><span><CalendarDays size={14}/> {storyDate(story.createdAt)}</span><span>•</span><span>{story.category}</span></div>
           <VideoPlayer story={story}/>
-          <div className="watch-actions"><span>THE STORY.</span><ShareButton/><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">ORIGINAL SOURCE <ExternalLink size={15}/></a></div>
+          <div className="watch-actions"><span>THE STORY.</span><ShareButton/><a href="#comments" className="watch-share"><MessageSquare size={16}/> COMMENTS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">ORIGINAL SOURCE <ExternalLink size={15}/></a></div>
           <p className="watch-description">{story.description || "An original StreetStar feature."}</p>
           {story.isDemo && <p className="demo-notice">This is demonstration content. The image and sample player are illustrative and do not represent a real news story or music release.</p>}
+          <VideoCommunity slug={story.slug} />
           <div className="watch-more-copy"><span>MORE THAN A MOMENT.</span><strong>BE PART OF THE CULTURE.</strong><Link href="/submit">SUBMIT YOUR VIDEO <ArrowUpRight size={16}/></Link></div>
         </article>
         <aside className="watch-aside"><div className="aside-top"><span>UP NEXT</span><Star size={17} fill="currentColor"/></div>{related.map((item,index) => <VideoCard key={item.slug} story={item} index={index} compact/>)}<Link className="aside-all" href="/#discover">EXPLORE ALL VIDEOS <ArrowUpRight size={15}/></Link></aside>
