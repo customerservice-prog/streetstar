@@ -2,20 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { createHmac } from "node:crypto";
 import { createSession, passwordIsValid, sessionCookie } from "@/lib/auth";
 import { database } from "@/lib/db";
+import { sameOrigin } from "@/lib/community";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
-  const origin = req.headers.get("origin");
-  if (origin) {
-    try {
-      if (new URL(origin).host !== req.nextUrl.host) {
-        return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
-      }
-    } catch {
-      return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
-    }
-  }
+  if (!sameOrigin(req)) return NextResponse.json({ error: "Invalid request origin." }, { status: 403 });
 
   const ip = req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   const secret = process.env.AUTH_SECRET;
