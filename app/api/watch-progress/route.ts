@@ -34,8 +34,8 @@ export async function POST(req:NextRequest){
     if(!started.rows.length)return jsonError("Play the video before reporting watch-time.",409);
     const complete=d.ended && d.duration>0 && d.position>=d.duration-5;
     const sql=[
-      "INSERT INTO video_watch_progress(video_slug,visitor_hash,watched_seconds,max_position_seconds,completed)",
-      "VALUES($1,$2,$3,$4,$5)",
+      "INSERT INTO video_watch_progress(video_slug,visitor_hash,watched_seconds,max_position_seconds,completed,last_reported_at)",
+      "VALUES($1,$2,$3,$4,$5,NOW())",
       "ON CONFLICT(video_slug,visitor_hash,viewed_on)",
       "DO UPDATE SET watched_seconds=LEAST(21600,video_watch_progress.watched_seconds+EXCLUDED.watched_seconds),",
       "max_position_seconds=GREATEST(video_watch_progress.max_position_seconds,EXCLUDED.max_position_seconds),",
