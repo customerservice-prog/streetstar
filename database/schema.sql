@@ -27,3 +27,24 @@ CREATE TABLE IF NOT EXISTS submissions (
 CREATE INDEX IF NOT EXISTS videos_status_created_at_idx ON videos (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS submissions_status_created_at_idx ON submissions (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS submissions_email_created_at_idx ON submissions (email, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS content_reports (
+  id BIGSERIAL PRIMARY KEY,
+  claimant TEXT NOT NULL,
+  email TEXT NOT NULL,
+  content_url TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  details TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','reviewed','resolved')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS content_reports_status_created_at_idx ON content_reports (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS content_reports_email_created_at_idx ON content_reports (email, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id BIGSERIAL PRIMARY KEY,
+  actor_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS login_attempts_actor_created_at_idx ON login_attempts (actor_hash, created_at DESC);
