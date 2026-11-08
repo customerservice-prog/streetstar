@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, ArrowUpRight, Clapperboard, Flame, Play, Radio, Search, SlidersHorizontal, Sparkles, TrendingUp, X } from "lucide-react";
+import { ArrowDown, ArrowRight, ArrowUpRight, Clapperboard, Flame, Play, Radio, Search, SlidersHorizontal, Sparkles, TrendingUp, X, Star } from "lucide-react";
 import { categories, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
 
