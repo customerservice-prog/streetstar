@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     ].join(' ');
     const result = await database().query(sql, [parsed.data, identity]);
     const total = await database().query<{ count: string }>(
-      "SELECT COUNT(*)::text AS count FROM video_comments WHERE video_slug=$1 AND status='approved'",
+      "SELECT COUNT(*)::text AS count FROM video_comments c LEFT JOIN video_comments parent ON parent.id=c.parent_id WHERE c.video_slug=$1 AND c.status='approved' AND (c.parent_id IS NULL OR parent.status='approved')",
       [parsed.data]
     );
     return NextResponse.json(
