@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, ArrowUpRight, Clapperboard, Flame, Play, Radio, Search, SlidersHorizontal, Sparkles, TrendingUp, X, Star } from "lucide-react";
 import { categories, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
+import { PosterImage } from "@/components/poster-image";
 
 export function HomeFeed({ stories }: { stories: Story[] }) {
   const [category, setCategory] = useState("All");
@@ -30,7 +31,7 @@ export function HomeFeed({ stories }: { stories: Story[] }) {
           <div className="feature-main">
             {lead ? <Link href={"/watch/" + lead.slug} className="feature-main-link">
               <div className="feature-image">
-                {lead.posterUrl && <img src={lead.posterUrl} alt="" />}
+                <PosterImage src={lead.posterUrl} alt="" loading="eager" />
                 <div className="feature-shade" />
                 <span className="feature-badge"><Flame size={15} /> EDITOR&apos;S PICK</span>
                 <span className="feature-play" aria-hidden="true"><Play size={27} fill="currentColor" /></span>
@@ -47,7 +48,7 @@ export function HomeFeed({ stories }: { stories: Story[] }) {
             {secondary.map((item, index) => (
               <Link href={"/watch/" + item.slug} className="side-story" key={item.slug}>
                 <div className="side-art">
-                  {item.posterUrl && <img src={item.posterUrl} alt="" />}
+                  <PosterImage src={item.posterUrl} alt="" />
                   <span className="side-play"><Play fill="currentColor" size={17} /></span>
                 </div>
                 <div className="side-description">
