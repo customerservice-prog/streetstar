@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ExternalLink, Play } from "lucide-react";
 import type { Story } from "@/lib/content";
+import { PosterImage } from "@/components/poster-image";
 
 function embedUrl(url: string): string | null {
   try {
@@ -33,7 +34,7 @@ export function VideoPlayer({ story }: { story: Story }) {
     <div className="player">
       {!ready ? (
         <button className="player-cover" onClick={() => setReady(true)} aria-label={"Play " + story.title}>
-          {story.posterUrl && <img src={story.posterUrl} alt="" />}
+          <PosterImage src={story.posterUrl} alt="" />
           <span className="player-tint" />
           <span className="player-center"><Play size={34} fill="currentColor"/></span>
           <span className="player-cover-label">CLICK TO WATCH</span>
