@@ -9,7 +9,7 @@ export const memberCookie="ss_member";
 export const memberMaxAge=30*24*3600;
 
 export type Member={id:string;email:string;displayName:string;notificationsEnabled:boolean;emailVerified:boolean;createdAt:string};
-type MemberRow={id:string;email:string;displayName:string;notificationsEnabled:boolean;createdAt:string};
+type MemberRow=Member;
 const identitySql='SELECT m.id::text AS id,m.email,m.display_name AS "displayName",m.notifications_enabled AS "notificationsEnabled",(m.email_verified_at IS NOT NULL) AS "emailVerified",m.created_at AS "createdAt" FROM member_sessions s JOIN members m ON m.id=s.member_id WHERE s.token_hash=$1 AND s.expires_at>NOW()';
 
 function digest(token:string){return createHash("sha256").update(token).digest("hex");}
