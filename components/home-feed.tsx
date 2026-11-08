@@ -77,7 +77,7 @@ export function HomeFeed({ stories }: { stories: Story[] }) {
           <aside className="v3-front-aside">
             <div className="v3-front-identity">
               <div className="v3-front-identity-top"><span>STREETSTAR</span><span>EST. 2026 <Zap size={13} fill="currentColor"/></span></div>
-              <h2>MORE THAN<br/><em>A MOMENT.</em><br/>IT&apos;S THE<br/>CULTURE<span>.</span></h2>
+              <h2>MORE THAN<br/><em>A MOMENT.</em><br/>IT&apos;S CULTURE<span>.</span></h2>
               <p>New sounds, bold stories, and the moments that move us.</p>
               <div className="v3-front-identity-bottom"><span>THE WORLD IS WATCHING</span><Star size={24} fill="currentColor" /></div>
             </div>
