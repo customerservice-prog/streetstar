@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, Menu, Play, Search, Star, UserRound, Zap } from "lucide-react";
+import { ArrowUpRight, Menu, Play, Search, Star, Zap } from "lucide-react";
+import { AccountIndicator } from "@/components/account-indicator";
 
 export function SiteHeader() {
   return (
@@ -22,7 +23,7 @@ export function SiteHeader() {
             <Link href="/submit"><span>04</span> FOR CREATORS</Link>
           </nav>
           <div className="header-actions">
-            <Link className="header-search" href="/#discover" aria-label="Find videos"><Search size={20} /></Link><Link className="header-search" href="/account" aria-label="Your StreetStar account"><UserRound size={20}/></Link>
+            <Link className="header-search" href="/#discover" aria-label="Find videos"><Search size={20} /></Link><AccountIndicator/>
             <Link className="button button-accent header-submit" href="/submit"><Zap size={15} fill="currentColor" /> GET FEATURED <ArrowUpRight size={16} /></Link>
             <details className="mobile-menu">
               <summary aria-label="Open navigation"><Menu size={23} /></summary>

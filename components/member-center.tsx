@@ -53,7 +53,10 @@ export function MemberCenter(){
     }catch(e){setError(e instanceof Error?e.message:"Unable to load account.");}
     finally{setLoading(false);}
   },[]);
-  useEffect(()=>{void load();},[load]);
+  useEffect(()=>{
+    if(new URLSearchParams(window.location.search).get("tab")==="notifications")setTab("notifications");
+    void load();
+  },[load]);
 
   async function request(path:string,action:string,body:object){
     const response=await fetch(path,{method:action,headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
