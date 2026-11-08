@@ -8,6 +8,7 @@ import { getStories } from "@/lib/db";
 import { storyDate } from "@/lib/content";
 import { ShareButton } from "@/components/share-button";
 import { VideoCommunity } from "@/components/video-community";
+import { VideoSave } from "@/components/video-save";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ export default async function WatchPage({ params }: Props) {
           <h1>{story.title}</h1>
           <div className="watch-meta"><span>{story.artist || "StreetStar"}</span><span>•</span><span><CalendarDays size={14}/> {storyDate(story.createdAt)}</span><span>•</span><span>{story.category}</span></div>
           <VideoPlayer story={story}/>
-          <div className="watch-actions"><span>THE STORY.</span><ShareButton/><a href="#comments" className="watch-share"><MessageSquare size={16}/> COMMENTS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">ORIGINAL SOURCE <ExternalLink size={15}/></a></div>
+          <div className="watch-actions"><span>THE STORY.</span><ShareButton/><VideoSave slug={story.slug}/><a href="#comments" className="watch-share"><MessageSquare size={16}/> COMMENTS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">ORIGINAL SOURCE <ExternalLink size={15}/></a></div>
           <p className="watch-description">{story.description || "An original StreetStar feature."}</p>
           {story.isDemo && <p className="demo-notice">This is demonstration content. The image and sample player are illustrative and do not represent a real news story or music release.</p>}
           <VideoCommunity slug={story.slug} />

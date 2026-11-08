@@ -32,12 +32,45 @@ export async function PATCH(req:NextRequest) {
   const parsed = moderation.safeParse(await req.json().catch(()=>null));
   if (!parsed.success) return jsonError("Invalid moderation action.",400);
   try {
-    const { type,id,status } = parsed.data;
-    const sql = type==="comment"
-      ? "UPDATE video_comments SET status=$1,reviewed_at=NOW() WHERE id=$2"
-      : "UPDATE comment_reports SET status=$1 WHERE id=$2";
-    const result = await database().query(sql,[status,id]);
-    if (!result.rowCount) return jsonError("Item no longer exists.",404);
-    return NextResponse.json({ok:true},{headers:{"Cache-Control":"no-store"}});
-  } catch { return jsonError("Moderation update failed.",503); }
+    const {type,id,status}=parsed.data;
+    if(type==="report"){
+      const result=await database().query("UPDATE comment_reports SET status=$1 WHERE id=$2",[status,id]);
+      if(!result.rowCount)return jsonError("Report not found.",404);
+      return NextResponse.json({ok:true});
+    }
+    const client=await database().connect();
+    try{
+      await client.query("BEGIN");
+      const previous=await client.query<{
+        status:string;member_id:string|null;parent_id:string|null;
+        author_name:string;video_slug:string
+      }>("SELECT status,member_id::text AS member_id,parent_id::text AS parent_id,author_name,video_slug FROM video_comments WHERE id=$1 FOR UPDATE",[id]);
+      const comment=previous.rows[0];
+      if(!comment){
+        await client.query("ROLLBACK");
+        return jsonError("Comment not found.",404);
+      }
+      await client.query("UPDATE video_comments SET status=$1,reviewed_at=NOW() WHERE id=$2",[status,id]);
+      // Fire exactly once when a pending/hidden comment is approved, not on repeated clicks.
+      if(status==="approved"&&comment.status!=="approved"){
+        if(comment.member_id){
+          await client.query(
+            "INSERT INTO member_notifications(member_id,kind,actor_name,video_slug,comment_id) SELECT id,'approved','StreetStar',$2,$3 FROM members WHERE id=$1 AND notifications_enabled=TRUE",
+            [comment.member_id,comment.video_slug,id]
+          );
+        }
+        if(comment.parent_id){
+          await client.query(
+            "INSERT INTO member_notifications(member_id,kind,actor_name,video_slug,comment_id) SELECT m.id,'reply',$1,$2,$3 FROM video_comments p JOIN members m ON m.id=p.member_id WHERE p.id=$4 AND p.status='approved' AND m.notifications_enabled=TRUE AND ($5::bigint IS NULL OR m.id<>$5::bigint)",
+            [comment.author_name,comment.video_slug,id,comment.parent_id,comment.member_id]
+          );
+        }
+      }
+      await client.query("COMMIT");
+      return NextResponse.json({ok:true});
+    }catch{
+      await client.query("ROLLBACK");
+      return jsonError("Moderation update failed.",503);
+    }finally{client.release();}
+  } catch {return jsonError("Moderation update failed.",503);}
 }

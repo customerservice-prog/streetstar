@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { database, hasDatabase } from "@/lib/db";
+import { getMemberFromRequest } from "@/lib/member-auth";
+import { sameOrigin, jsonError } from "@/lib/community";
 
 export const runtime = "nodejs";
 
@@ -16,6 +18,7 @@ const form = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  if(!sameOrigin(request))return jsonError("Invalid request origin.",403);
   const data = await request.json().catch(() => null);
   const parsed = form.safeParse(data);
   if (!parsed.success) return NextResponse.json({ error: "Please check the required fields and video link." }, { status: 400 });
@@ -28,9 +31,12 @@ export async function POST(request: NextRequest) {
       [parsed.data.email.toLowerCase()]
     );
     if (Number(count.rows[0].count) >= 3) return NextResponse.json({ error: "Submission limit reached. Try again later." }, { status: 429 });
+    const member=await getMemberFromRequest(request);
+    // Only new signed-in submissions can appear in that member's private history.
+    const memberId=member && member.email===parsed.data.email.toLowerCase()?member.id:null;
     const result = await db.query<{ id: string }>(
-      "INSERT INTO submissions (artist, email, title, category, video_url, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
-      [parsed.data.artist, parsed.data.email.toLowerCase(), parsed.data.title, parsed.data.category, parsed.data.videoUrl, parsed.data.notes]
+      "INSERT INTO submissions (artist, email, title, category, video_url, notes,member_id) VALUES ($1, $2, $3, $4, $5, $6,$7) RETURNING id",
+      [parsed.data.artist, parsed.data.email.toLowerCase(), parsed.data.title, parsed.data.category, parsed.data.videoUrl, parsed.data.notes,memberId]
     );
     return NextResponse.json({ ok: true, id: result.rows[0].id }, { status: 201 });
   } catch {

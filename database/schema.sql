@@ -98,3 +98,67 @@ CREATE TABLE IF NOT EXISTS video_reactions (
   PRIMARY KEY(video_slug, guest_hash)
 );
 CREATE INDEX IF NOT EXISTS video_reactions_slug_idx ON video_reactions(video_slug);
+
+
+-- Viewer membership, personal libraries, and event-derived analytics.
+CREATE TABLE IF NOT EXISTS members (
+  id BIGSERIAL PRIMARY KEY,
+  email VARCHAR(200) NOT NULL UNIQUE,
+  display_name VARCHAR(40) NOT NULL,
+  password_hash TEXT NOT NULL,
+  notifications_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE TABLE IF NOT EXISTS member_sessions (
+  token_hash CHAR(64) PRIMARY KEY,
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS member_sessions_member_idx ON member_sessions(member_id,expires_at);
+CREATE TABLE IF NOT EXISTS member_auth_attempts (
+  id BIGSERIAL PRIMARY KEY,
+  actor_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS member_auth_attempts_actor_idx ON member_auth_attempts(actor_hash,created_at DESC);
+ALTER TABLE video_comments
+  ADD COLUMN IF NOT EXISTS member_id BIGINT REFERENCES members(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS video_comments_member_idx ON video_comments(member_id,created_at DESC);
+ALTER TABLE submissions
+  ADD COLUMN IF NOT EXISTS member_id BIGINT REFERENCES members(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS submissions_member_idx ON submissions(member_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS member_notifications (
+  id BIGSERIAL PRIMARY KEY,
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  kind VARCHAR(24) NOT NULL CHECK(kind IN ('reply','approved')),
+  actor_name VARCHAR(40) NOT NULL DEFAULT '',
+  video_slug TEXT NOT NULL,
+  comment_id BIGINT REFERENCES video_comments(id) ON DELETE SET NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  read_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS member_notifications_member_idx ON member_notifications(member_id,created_at DESC);
+CREATE TABLE IF NOT EXISTS member_saves (
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  video_slug TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(member_id,video_slug)
+);
+CREATE TABLE IF NOT EXISTS member_watch_history (
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  video_slug TEXT NOT NULL,
+  view_count INTEGER NOT NULL DEFAULT 1,
+  last_watched TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(member_id,video_slug)
+);
+CREATE INDEX IF NOT EXISTS member_watch_recent_idx ON member_watch_history(member_id,last_watched DESC);
+-- One counted play per browser per video per UTC day, not one per page load.
+CREATE TABLE IF NOT EXISTS video_play_events (
+  video_slug TEXT NOT NULL,
+  visitor_hash CHAR(64) NOT NULL,
+  viewed_on DATE NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC')::date,
+  first_played TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(video_slug,visitor_hash,viewed_on)
+);
+CREATE INDEX IF NOT EXISTS video_play_trending_idx ON video_play_events(viewed_on DESC,video_slug);

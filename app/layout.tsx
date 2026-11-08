@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 import "./editorial-v3.css";
 import "./community.css";
+import "./member.css";
 
 export const metadata: Metadata = {
   title: { default: "StreetStar | The Culture Doesn't Wait", template: "%s | StreetStar" },

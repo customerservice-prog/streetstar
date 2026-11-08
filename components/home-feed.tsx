@@ -10,8 +10,10 @@ import {
 import { categories, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
 import { PosterImage } from "@/components/poster-image";
+import { TrendingPreview } from "@/components/trending-preview";
+import type { TrendingRow } from "@/lib/trending";
 
-export function HomeFeed({ stories }: { stories: Story[] }) {
+export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:TrendingRow[] }) {
   const [category, setCategory] = useState("All");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
@@ -114,6 +116,7 @@ export function HomeFeed({ stories }: { stories: Story[] }) {
         </div>
       </div>
 
+      <TrendingPreview stories={stories} trending={trending}/>
       <section className="container v3-discover" id="discover">
         <div className="v3-section-head">
           <div><div className="v3-eyebrow"><span className="v3-eyebrow-line"/> THE LATEST / THE UNMISSABLE</div><h2>THE <span>DROP.</span></h2><p>The new voices, the headlines, and everything making noise right now.</p></div>

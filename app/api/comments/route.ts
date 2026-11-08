@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { database } from "@/lib/db";
 import { actorHash, jsonError, publishedVideo, sameOrigin, guestIdentity, guestCookieName } from "@/lib/community";
+import { getMemberFromRequest } from "@/lib/member-auth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
     const identity = token && /^[a-f0-9]{48}$/.test(token) ? guestIdentity(req).hash : null;
     const sql = [
       'SELECT c.id::text AS id, c.parent_id::text AS "parentId",',
-      'c.author_name AS name, c.body, c.created_at AS "createdAt",',
+      'c.author_name AS name, c.body, c.created_at AS "createdAt", (c.member_id IS NOT NULL) AS "isMember",',
       '(SELECT COUNT(*)::integer FROM comment_likes l WHERE l.comment_id=c.id) AS likes,',
       'EXISTS(SELECT 1 FROM comment_likes l WHERE l.comment_id=c.id AND l.guest_hash=$2) AS liked',
       'FROM video_comments c LEFT JOIN video_comments parent ON parent.id=c.parent_id',
@@ -71,9 +72,10 @@ export async function POST(req: NextRequest) {
       );
       if (!parent.rows.length) return jsonError("This comment cannot be replied to.", 400);
     }
+    const member=await getMemberFromRequest(req);
     await db.query(
-      "INSERT INTO video_comments(video_slug,parent_id,author_name,body,actor_hash) VALUES($1,$2,$3,$4,$5)",
-      [slug, parentId || null, name, body, actor]
+      "INSERT INTO video_comments(video_slug,parent_id,author_name,body,actor_hash,member_id) VALUES($1,$2,$3,$4,$5,$6)",
+      [slug, parentId || null, member?.displayName||name, body, actor, member?.id||null]
     );
     return NextResponse.json(
       { ok: true, pending: true, message: "Comment received. It will appear after moderator approval." },

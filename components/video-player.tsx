@@ -30,10 +30,18 @@ export function VideoPlayer({ story }: { story: Story }) {
   const [ready, setReady] = useState(false);
   const embed = embedUrl(story.videoUrl);
   const direct = /^https?:\/\/[^\s]+\.(mp4|webm|ogg)(\?[^\s]*)?$/i.test(story.videoUrl);
+  const trackPlay = () => {
+    void fetch("/api/watch-event",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({slug:story.slug}),
+      keepalive:true
+    }).catch(()=>{});
+  };
   return (
     <div className="player">
       {!ready ? (
-        <button className="player-cover" onClick={() => setReady(true)} aria-label={"Play " + story.title}>
+        <button className="player-cover" onClick={() => {setReady(true);if(embed)trackPlay();}} aria-label={"Play " + story.title}>
           <PosterImage src={story.posterUrl} alt="" />
           <span className="player-tint" />
           <span className="player-center"><Play size={34} fill="currentColor"/></span>
@@ -42,7 +50,7 @@ export function VideoPlayer({ story }: { story: Story }) {
       ) : embed ? (
         <iframe src={embed + "?autoplay=1&rel=0"} title={story.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
       ) : direct ? (
-        <video controls autoPlay playsInline poster={story.posterUrl || undefined} src={story.videoUrl}>Your browser does not support this video.</video>
+        <video controls autoPlay playsInline onPlay={trackPlay} poster={story.posterUrl || undefined} src={story.videoUrl}>Your browser does not support this video.</video>
       ) : (
         <div className="external-player"><h3>PLAY ON THE ORIGINAL PLATFORM</h3><p>This video is hosted externally and cannot be embedded here.</p><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="button button-accent">OPEN VIDEO <ExternalLink size={17}/></a></div>
       )}

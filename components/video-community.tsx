@@ -12,6 +12,7 @@ type Comment = {
   createdAt: string;
   likes: number;
   liked: boolean;
+  isMember?:boolean;
 };
 type Reaction = "fire" | "love" | "wow";
 type Reactions = {
@@ -52,6 +53,8 @@ export function VideoCommunity({ slug }: {slug:string}) {
   const [error,setError] = useState("");
   const [notice,setNotice] = useState("");
   const [name,setName] = useState("");
+  const [memberName,setMemberName] = useState("");
+  useEffect(()=>{void fetch("/api/member/auth",{cache:"no-store"}).then(r=>r.json()).then(x=>{if(x.member?.displayName){setMemberName(x.member.displayName);setName(x.member.displayName);}}).catch(()=>{});},[]);
   const [message,setMessage] = useState("");
   const [replyTo,setReplyTo] = useState<Comment|null>(null);
   const [sort,setSort] = useState<"newest"|"popular">("newest");
@@ -144,7 +147,7 @@ export function VideoCommunity({ slug }: {slug:string}) {
     return <div className={"discussion-comment"+(nested?" discussion-reply":"")} key={comment.id}>
       <div className="discussion-avatar" aria-hidden="true">{comment.name.charAt(0).toUpperCase()}</div>
       <div className="discussion-comment-content">
-        <div className="discussion-comment-header"><strong>{comment.name}</strong><span className="discussion-guest">GUEST</span><time dateTime={comment.createdAt}>{elapsed(comment.createdAt)}</time></div>
+        <div className="discussion-comment-header"><strong>{comment.name}</strong><span className="discussion-guest">{comment.isMember?"MEMBER":"GUEST"}</span><time dateTime={comment.createdAt}>{elapsed(comment.createdAt)}</time></div>
         <p>{comment.body}</p>
         <div className="discussion-comment-actions">
           <button type="button" className={comment.liked?"active":""} onClick={()=>void likeComment(comment)} aria-label={"Like comment by "+comment.name} aria-pressed={comment.liked}><ThumbsUp size={15}/>{comment.likes>0?comment.likes:"LIKE"}</button>
@@ -179,11 +182,11 @@ export function VideoCommunity({ slug }: {slug:string}) {
     </div>
 
     <div className="discussion-compose" id="discussion-compose">
-      <div className="discussion-compose-top"><span><MessageCircle size={16}/> ADD YOUR VOICE</span><span><ShieldCheck size={15}/> MODERATED DISCUSSION</span></div>
+      <div className="discussion-compose-top"><span><MessageCircle size={16}/> {memberName?"COMMENTING AS A MEMBER":"ADD YOUR VOICE"}</span><span><ShieldCheck size={15}/> MODERATED DISCUSSION</span></div>
       {replyTo && <div className="discussion-replying">Replying to <strong>{replyTo.name}</strong><button type="button" onClick={()=>setReplyTo(null)} aria-label="Cancel reply"><X size={16}/></button></div>}
       <form onSubmit={submit}>
         <label htmlFor="discussion-name">DISPLAY NAME <span className="discussion-subtle">(UNVERIFIED GUEST)</span></label>
-        <input id="discussion-name" type="text" required minLength={2} maxLength={40}
+        <input id="discussion-name" type="text" readOnly={!!memberName} required minLength={2} maxLength={40}
           value={name} onChange={e=>setName(e.target.value)} placeholder="What should we call you?" autoComplete="nickname" />
         <label htmlFor="discussion-text">YOUR COMMENT</label>
         <textarea id="discussion-text" required minLength={3} maxLength={1200} rows={4}

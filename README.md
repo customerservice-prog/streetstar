@@ -11,10 +11,20 @@ StreetStar is an independent, mobile-first video discovery and urban entertainme
 - PostgreSQL schema for durable submissions and published content.
 - Demo-only sample posts shown **only** when no published database videos exist. They are visibly labeled as demos.
 - Accessible navigation, SEO metadata, and sharing controls.
+- Viewer membership with salted password hashes, database-backed session cookies, private saved videos, watch history, in-app reply alerts, and a submission-history dashboard.
+- Real play-start tracking and seven-day trending charts. Demo videos do not contribute to ranked metrics.
 - Guest comments, one-level threaded replies, comment likes, and Fire/Love/Wow video reactions.
 - Manual approval of every new comment or reply, plus per-comment abuse reporting.
 - Moderation queue at `/admin/comments` (requires admin login), with approve/hide actions and report review.
 - Pseudonymous guest reaction cookie, basic hashed-address comment throttling, and human moderation.
+
+## Community and account limitations
+
+- Accounts currently use unverified email addresses with strong salted-password hashing. Email confirmation and automatic password-reset emails require a verified sending provider and are not yet active. Do not suggest recovery links exist.
+- Signed-in submissions enter the creator dashboard only if their submitted email matches the member account. Existing guest submissions cannot be claimed simply by registering with that email.
+- Approved comments from signed-in members trigger in-app notifications; guest commenters cannot receive private reply alerts.
+- Trending reflects deduplicated daily play starts, approved comments and reactions; it does not measure verified unique individuals, watch duration or advertising impressions.
+- Keep database backups and add anti-abuse controls (WAF/rate limiting and bot checks) before heavy traffic.
 
 ## Run locally
 
