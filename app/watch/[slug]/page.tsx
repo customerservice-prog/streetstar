@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const stories = await getStories();
   const story = stories.find(item => item.slug === slug);
-  return story ? { title: story.title, description: story.description, openGraph: { images: story.posterUrl ? [story.posterUrl] : [] } } : { title: "Video not found" };
+  return story ? { title: story.title, description: story.description, robots: story.isDemo ? { index: false, follow: false } : undefined, openGraph: { images: story.posterUrl ? [story.posterUrl] : [] } } : { title: "Video not found" };
 }
 
 export default async function WatchPage({ params }: Props) {
