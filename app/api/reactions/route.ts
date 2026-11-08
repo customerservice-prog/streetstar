@@ -42,10 +42,19 @@ export async function POST(req: NextRequest) {
     if (!(await publishedVideo(parsed.data.slug))) return jsonError("Video not found.", 404);
     const guest = guestIdentity(req);
     const db = database();
-    await db.query(
-      "INSERT INTO video_reactions(video_slug,guest_hash,reaction) VALUES($1,$2,$3) ON CONFLICT(video_slug,guest_hash) DO UPDATE SET reaction=EXCLUDED.reaction",
-      [parsed.data.slug,guest.hash,parsed.data.reaction]
+    const existing = await db.query<{reaction:string}>(
+      "SELECT reaction FROM video_reactions WHERE video_slug=$1 AND guest_hash=$2",
+      [parsed.data.slug, guest.hash]
     );
+    if (existing.rows[0]?.reaction === parsed.data.reaction) {
+      await db.query("DELETE FROM video_reactions WHERE video_slug=$1 AND guest_hash=$2",
+        [parsed.data.slug, guest.hash]);
+    } else {
+      await db.query(
+        "INSERT INTO video_reactions(video_slug,guest_hash,reaction) VALUES($1,$2,$3) ON CONFLICT(video_slug,guest_hash) DO UPDATE SET reaction=EXCLUDED.reaction",
+        [parsed.data.slug,guest.hash,parsed.data.reaction]
+      );
+    }
     const stats = await reactionStats(parsed.data.slug, guest.hash);
     return withGuestCookie(
       NextResponse.json({ok:true,...stats},{headers:{"Cache-Control":"no-store"}}),
