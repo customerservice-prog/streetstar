@@ -162,3 +162,35 @@ CREATE TABLE IF NOT EXISTS video_play_events (
   PRIMARY KEY(video_slug,visitor_hash,viewed_on)
 );
 CREATE INDEX IF NOT EXISTS video_play_trending_idx ON video_play_events(viewed_on DESC,video_slug);
+
+
+-- Secure account recovery (enabled only when verified sender is configured).
+ALTER TABLE members ADD COLUMN IF NOT EXISTS email_verified_at TIMESTAMPTZ;
+CREATE TABLE IF NOT EXISTS member_email_tokens (
+  token_hash CHAR(64) PRIMARY KEY,
+  member_id BIGINT NOT NULL REFERENCES members(id) ON DELETE CASCADE,
+  purpose VARCHAR(12) NOT NULL CHECK (purpose IN ('verify','reset')),
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS member_email_tokens_member_idx ON member_email_tokens(member_id,purpose,created_at DESC);
+CREATE TABLE IF NOT EXISTS moderation_blocks (
+  actor_hash CHAR(64) PRIMARY KEY,
+  reason VARCHAR(200) NOT NULL DEFAULT 'Repeated policy violations',
+  blocked_until TIMESTAMPTZ NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS moderation_blocks_active_idx ON moderation_blocks(blocked_until);
+ALTER TABLE members ADD COLUMN IF NOT EXISTS suspended_until TIMESTAMPTZ;
+CREATE TABLE IF NOT EXISTS video_watch_progress (
+  video_slug TEXT NOT NULL,
+  visitor_hash CHAR(64) NOT NULL,
+  viewed_on DATE NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC')::date,
+  watched_seconds INTEGER NOT NULL DEFAULT 0,
+  max_position_seconds INTEGER NOT NULL DEFAULT 0,
+  completed BOOLEAN NOT NULL DEFAULT FALSE,
+  last_reported_at TIMESTAMPTZ NOT NULL DEFAULT NOW() - INTERVAL '10 seconds',
+  PRIMARY KEY(video_slug,visitor_hash,viewed_on)
+);
+CREATE INDEX IF NOT EXISTS video_watch_progress_day_idx ON video_watch_progress(viewed_on DESC,video_slug);

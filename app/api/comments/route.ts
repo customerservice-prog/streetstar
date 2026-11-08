@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { database } from "@/lib/db";
-import { actorHash, jsonError, publishedVideo, sameOrigin, guestIdentity, guestCookieName } from "@/lib/community";
+import { actorHash, actorIsBlocked, jsonError, publishedVideo, sameOrigin, guestIdentity, guestCookieName } from "@/lib/community";
 import { getMemberFromRequest } from "@/lib/member-auth";
 
 export const runtime = "nodejs";
@@ -58,6 +58,12 @@ export async function POST(req: NextRequest) {
     if (!(await publishedVideo(slug))) return jsonError("Video not found.", 404);
     const db = database();
     const actor = actorHash(req);
+    if(await actorIsBlocked(req))return jsonError("Commenting has been temporarily restricted for this connection.",403);
+    const member=await getMemberFromRequest(req);
+    if(member){
+      const suspended=await db.query("SELECT 1 FROM members WHERE id=$1 AND suspended_until>NOW()",[member.id]);
+      if(suspended.rows.length)return jsonError("This account is temporarily restricted from commenting.",403);
+    }
     const rate = await db.query<{ count: string }>(
       "SELECT COUNT(*)::text AS count FROM video_comments WHERE actor_hash=$1 AND created_at > NOW() - INTERVAL '1 hour'",
       [actor]
@@ -72,7 +78,6 @@ export async function POST(req: NextRequest) {
       );
       if (!parent.rows.length) return jsonError("This comment cannot be replied to.", 400);
     }
-    const member=await getMemberFromRequest(req);
     await db.query(
       "INSERT INTO video_comments(video_slug,parent_id,author_name,body,actor_hash,member_id) VALUES($1,$2,$3,$4,$5,$6)",
       [slug, parentId || null, member?.displayName||name, body, actor, member?.id||null]

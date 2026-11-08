@@ -6,7 +6,7 @@ import { ArrowRight, ArrowUpRight, Bell, Bookmark, Check, Clapperboard, Clock3, 
 import { PosterImage } from "@/components/poster-image";
 import type { Story } from "@/lib/content";
 
-type Member={id:string;email:string;displayName:string;notificationsEnabled:boolean;createdAt:string};
+type Member={id:string;email:string;displayName:string;notificationsEnabled:boolean;emailVerified:boolean;createdAt:string};
 type LibraryVideo={slug:string;story:Story;createdAt?:string;lastWatched?:string;viewCount?:number};
 type Submission={id:string;title:string;category:string;status:string;createdAt:string};
 type Note={id:string;kind:"reply"|"approved";actorName:string;slug:string;createdAt:string;readAt:string|null};
@@ -23,6 +23,7 @@ export function MemberCenter(){
   const [tab,setTab]=useState<Tab>("saved");
   const [error,setError]=useState("");
   const [notice,setNotice]=useState("");
+  const [emailEnabled,setEmailEnabled]=useState(false);
   const [email,setEmail]=useState("");
   const [password,setPassword]=useState("");
   const [displayName,setDisplayName]=useState("");
@@ -34,6 +35,8 @@ export function MemberCenter(){
   const [deletePassword,setDeletePassword]=useState("");
   const [deleteConfirm,setDeleteConfirm]=useState("");
   const [showDelete,setShowDelete]=useState(false);
+
+  useEffect(()=>{void fetch("/api/member/email",{cache:"no-store"}).then(r=>r.json()).then(x=>setEmailEnabled(Boolean(x.emailEnabled))).catch(()=>{});},[]);
 
   const load=useCallback(async()=>{
     try {
@@ -150,7 +153,8 @@ export function MemberCenter(){
             <label>PASSWORD<input required type="password" minLength={mode==="register"?10:1} maxLength={128} autoComplete={mode==="register"?"new-password":"current-password"} value={password} onChange={e=>setPassword(e.target.value)} placeholder={mode==="register"?"At least 10 characters":"Your password"}/></label>
             <button type="submit" disabled={busy} className="button button-accent">{busy?"WORKING...":mode==="register"?"CREATE MY ACCOUNT":"SIGN IN"}<ArrowUpRight size={17}/></button>
           </form>
-          <p className="member-fineprint">Email confirmation and password recovery are not yet available. Use a strong, unique password. By joining, you agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.</p>
+          {mode==="login"&&emailEnabled&&<p className="member-help-link"><Link href="/account/security?mode=reset">Forgot your password? <ArrowRight size={14}/></Link></p>}
+          <p className="member-fineprint">{emailEnabled?"Account verification and recovery links are sent to your registered email.":"Email verification and password recovery are currently unavailable until StreetStar connects its own verified email sender."} Use a strong, unique password. By joining, you agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.</p>
         </section>
         <aside className="member-auth-promo"><div className="member-auth-promo-star"><Star size={55} fill="currentColor"/></div><span>MORE THAN A PROFILE.</span><h2>YOUR CULTURE.<br/><em>YOUR SPACE.</em></h2><div><p><Bookmark size={17}/> SAVE YOUR FAVORITES</p><p><Clock3 size={17}/> YOUR WATCH HISTORY</p><p><Bell size={17}/> REPLY ALERTS</p><p><MessageCircle size={17}/> JOIN THE DISCUSSION</p></div></aside>
       </div>
@@ -174,7 +178,9 @@ export function MemberCenter(){
           {tab==="settings"&&<><div className="member-content-head"><h2>YOUR <span>SETTINGS.</span></h2></div>
             <form className="member-form member-settings" onSubmit={saveProfile}>
               <label>DISPLAY NAME<input required minLength={2} maxLength={40} value={displayName} onChange={e=>setDisplayName(e.target.value)}/></label>
-              <p className="member-readonly">ACCOUNT EMAIL: {member.email} · Email changes require verification and are not available yet.</p>
+              <p className="member-readonly">ACCOUNT EMAIL: {member.email} · {member.emailVerified?"Verified email":"Email not verified"} · Email changes aren't available yet.</p>
+              {emailEnabled&&!member.emailVerified&&<p className="member-help-link"><Link href="/account/security?mode=verify"><Mail size={16}/> SEND EMAIL VERIFICATION LINK <ArrowRight size={14}/></Link></p>}
+              {emailEnabled&&<p className="member-help-link"><Link href="/account/security?mode=reset"><KeyRound size={16}/> PASSWORD RECOVERY <ArrowRight size={14}/></Link></p> 
               <label className="member-toggle"><input type="checkbox" checked={member.notificationsEnabled} onChange={e=>void toggleNotifications(e.target.checked)} disabled={busy}/><span>Enable in-app notifications for replies and approvals</span></label>
               <h3>CHANGE PASSWORD (OPTIONAL)</h3>
               <label>CURRENT PASSWORD<input type="password" autoComplete="current-password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)}/></label>

@@ -47,6 +47,7 @@ jobs:
           done
           node scripts/test-community.mjs
           node scripts/test-members.mjs
+          node scripts/test-security.mjs
       - name: Show server logs on failure
         if: failure()
         run: cat /tmp/streetstar-ci-server.log || true

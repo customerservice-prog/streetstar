@@ -3,6 +3,7 @@ import { z } from "zod";
 import { database } from "@/lib/db";
 import { actorHash, jsonError, sameOrigin } from "@/lib/community";
 import { destroyMemberSession, getMemberFromRequest, issueMemberSession, makePasswordHash, matchPassword, memberCookie, sessionCookieOptions } from "@/lib/member-auth";
+import { emailConfigured,sendMemberEmail } from "@/lib/member-email";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -38,6 +39,7 @@ export async function POST(req:NextRequest){
     // Rate limit both unsuccessful sign-ins and new account registrations.
     await db.query("INSERT INTO member_auth_attempts(actor_hash) VALUES($1)",[actor]);
     let id:string;
+    let verificationSent=false;
     if(d.action==="register"){
       if(d.website)return NextResponse.json({ok:true});
       const daily=await db.query<{count:string}>(
@@ -51,6 +53,7 @@ export async function POST(req:NextRequest){
       );
       if(!inserted.rows.length)return jsonError("This email is already registered. Sign in instead.",409);
       id=inserted.rows[0].id;
+      if(emailConfigured())verificationSent=await sendMemberEmail(id,d.email,"verify").catch(()=>false);
     } else {
       const result=await db.query<{id:string;password_hash:string}>(
         "SELECT id::text AS id,password_hash FROM members WHERE email=$1",[d.email]
@@ -60,7 +63,7 @@ export async function POST(req:NextRequest){
       id=user.id;
     }
     const token=await issueMemberSession(id);
-    const res=NextResponse.json({ok:true,message:d.action==="register"?"Account created. Email verification is not enabled yet.":"Welcome back."},{headers:{"Cache-Control":"no-store"}});
+    const res=NextResponse.json({ok:true,message:d.action==="register"?(verificationSent?"Account created. Check your email for a verification link.":"Account created. Email confirmation remains pending. You can request a new link in account settings."):"Welcome back."},{headers:{"Cache-Control":"no-store"}});
     res.cookies.set(memberCookie,token,sessionCookieOptions());
     return res;
   }catch{return jsonError("Unable to complete your request. Please try again.",503);}

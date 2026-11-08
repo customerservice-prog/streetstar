@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { database } from "@/lib/db";
-import { guestIdentity, jsonError, sameOrigin, withGuestCookie } from "@/lib/community";
+import { guestIdentity, actorIsBlocked, jsonError, sameOrigin, withGuestCookie } from "@/lib/community";
 
 export const runtime = "nodejs";
 const form = z.object({
@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   const parsed = form.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return jsonError("Invalid report.", 400);
   try {
+    if(await actorIsBlocked(req))return jsonError("Reports are temporarily restricted.",403);
     const db = database();
     const comment = await db.query("SELECT id FROM video_comments WHERE id=$1 AND status='approved'", [parsed.data.commentId]);
     if (!comment.rows.length) return jsonError("Comment not found.", 404);

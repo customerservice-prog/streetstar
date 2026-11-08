@@ -5,13 +5,13 @@ import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, Check, CircleAlert, Flag, Loader2, MessageSquare, RefreshCw, ShieldCheck, ThumbsUp, X } from "lucide-react";
 
 type Item = {
-  id:string;slug:string;parentId:string|null;name:string;body:string;status:string;createdAt:string;
+  id:string;slug:string;parentId:string|null;name:string;body:string;status:string;createdAt:string;blocked?:boolean;suspicious?:boolean;isMember?:boolean;
 };
 type Report = {
   id:string;commentId:string;reason:string;details:string;status:string;createdAt:string;body:string;name:string;slug:string;
 };
 type Data = {comments:Item[];reports:Report[]};
-type Filter = "pending"|"approved"|"hidden"|"reports";
+type Filter = "pending"|"approved"|"hidden"|"flagged"|"reports";
 
 export function AdminCommentModeration() {
   const [data,setData]=useState<Data>({comments:[],reports:[]});
@@ -32,22 +32,23 @@ export function AdminCommentModeration() {
   },[]);
   useEffect(()=>{void load();},[load]);
 
-  const items=useMemo(()=>data.comments.filter(c=>c.status===filter),[filter,data.comments]);
+  const items=useMemo(()=>data.comments.filter(c=>filter==="flagged"?c.suspicious:c.status===filter),[filter,data.comments]);
   const openReports=data.reports.filter(r=>r.status==="open");
-  async function update(type:"comment"|"report",id:string,status:string) {
+  async function update(type:"comment"|"report"|"block",id:string,status:string) {
+    if(type==="block"&&status==="blocked"&&!window.confirm("Temporarily block this network and associated member account for 24 hours? Shared networks can affect other users."))return;
     setBusy(true);setError("");setNotice("");
     try {
       const res=await fetch("/api/admin/comments",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({type,id,status})});
       const info=await res.json().catch(()=>({}));
       if(!res.ok)throw new Error(info.error||"Update failed.");
-      setNotice(type==="comment"?"Comment moderation saved.":"Report status saved.");
+      setNotice(type==="comment"?"Comment moderation saved.":type==="block"?"Temporary restriction updated.":"Report status saved.");
       await load();
     }catch(e){setError(e instanceof Error?e.message:"Update failed.");}
     finally{setBusy(false);}
   }
   return <main className="container comment-admin">
     <div className="comment-admin-top"><Link href="/admin"><ArrowLeft size={17}/> CONTROL ROOM</Link><span><ShieldCheck size={16}/> STAFF ONLY</span></div>
-    <div className="comment-admin-title"><div><p className="community-eyebrow"><MessageSquare size={16}/> COMMUNITY MANAGEMENT</p><h1>COMMENT <span>CONTROL.</span></h1><p>Approve comments, manage replies and review member reports.</p></div><button type="button" className="button button-outline" onClick={()=>{setLoading(true);void load();}}><RefreshCw size={17}/> REFRESH</button></div>
+    <div className="comment-admin-title"><div><p className="community-eyebrow"><MessageSquare size={16}/> COMMUNITY MANAGEMENT</p><h1>COMMENT <span>CONTROL.</span></h1><p>Approve comments, flag suspicious links, temporarily restrict abuse and review community reports.</p></div><button type="button" className="button button-outline" onClick={()=>{setLoading(true);void load();}}><RefreshCw size={17}/> REFRESH</button></div>
     <div className="comment-admin-stats">
       <div><strong>{data.comments.filter(c=>c.status==="pending").length}</strong><span>NEED APPROVAL</span></div>
       <div><strong>{data.comments.filter(c=>c.status==="approved").length}</strong><span>APPROVED</span></div>
@@ -58,6 +59,7 @@ export function AdminCommentModeration() {
         ["pending","PENDING"],
         ["approved","APPROVED"],
         ["hidden","HIDDEN"],
+        ["flagged","SUSPICIOUS"],
         ["reports","REPORTS"]
       ] as [Filter,string][]).map(([value,label])=><button type="button" key={value} className={filter===value?"active":""} onClick={()=>setFilter(value)}>{label} {value==="pending"&&data.comments.filter(c=>c.status==="pending").length>0?<span>{data.comments.filter(c=>c.status==="pending").length}</span>:value==="reports"&&openReports.length>0?<span>{openReports.length}</span>:null}</button>)}
     </div>
@@ -76,13 +78,14 @@ export function AdminCommentModeration() {
         </article>)}</div>
       :items.length===0?<div className="comment-admin-empty"><Check size={32}/><h2>ALL CAUGHT UP.</h2><p>No {filter} comments in the moderation queue.</p></div>
       :<div className="comment-admin-list">{items.map(c=><article className="comment-admin-item" key={c.id}>
-        <div><p className="comment-admin-meta"><MessageSquare size={13}/> {c.status.toUpperCase()} {c.parentId?"/ REPLY":"/ COMMENT"} / {new Date(c.createdAt).toLocaleDateString()}</p><h3>{c.name} <span className="discussion-guest">GUEST</span></h3><p className="comment-admin-quote">{c.body}</p><Link href={"/watch/"+c.slug+"#comments"} target="_blank">VIDEO: {c.slug} <ArrowUpRight size={14}/></Link></div>
+        <div><p className="comment-admin-meta"><MessageSquare size={13}/> {c.status.toUpperCase()} {c.parentId?"/ REPLY":"/ COMMENT"} / {new Date(c.createdAt).toLocaleDateString()}</p><h3>{c.name} <span className="discussion-guest">{c.isMember?"MEMBER":"GUEST"}</span>{c.suspicious&&<span className="moderator-suspicious">LINK DETECTED</span>}{c.blocked&&<span className="moderator-suspicious">TEMPORARILY BLOCKED</span>}</h3><p className="comment-admin-quote">{c.body}</p><Link href={"/watch/"+c.slug+"#comments"} target="_blank">VIDEO: {c.slug} <ArrowUpRight size={14}/></Link></div>
         <div className="comment-admin-controls">
           {c.status!=="approved"&&<button type="button" disabled={busy} className="button button-accent" onClick={()=>void update("comment",c.id,"approved")}><Check size={15}/> APPROVE</button>}
           {c.status!=="hidden"&&<button type="button" disabled={busy} className="button button-outline" onClick={()=>void update("comment",c.id,"hidden")}><X size={15}/> HIDE</button>}
           {c.status==="approved"&&<span className="comment-admin-approved"><ThumbsUp size={15}/> PUBLIC</span>}
+          <button type="button" disabled={busy} className="button button-outline" onClick={()=>void update("block",c.id,c.blocked?"unblocked":"blocked")}>{c.blocked?"UNBLOCK":"BLOCK 24H"}</button>
         </div>
       </article>)}</div>}
-    <p className="comment-admin-policy">Comments are guest-submitted and unverified. Review harassment, private information and third-party rights before approving. For urgent harm, hide the comment and assess the report promptly.</p>
+    <p className="comment-admin-policy">Names are unverified unless associated with a signed-in member, whose email may also be unverified. Suspicious-link indicators are review prompts, not proof of wrongdoing. Temporary network restrictions may affect shared IP addresses. For urgent harm, hide content and review reports promptly.</p>
   </main>;
 }

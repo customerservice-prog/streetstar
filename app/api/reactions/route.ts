@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { database } from "@/lib/db";
-import { guestCookieName, guestIdentity, jsonError, publishedVideo, sameOrigin, withGuestCookie } from "@/lib/community";
+import { guestCookieName, guestIdentity, actorIsBlocked, jsonError, publishedVideo, sameOrigin, withGuestCookie } from "@/lib/community";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return jsonError("Invalid reaction.", 400);
   try {
     if (!(await publishedVideo(parsed.data.slug))) return jsonError("Video not found.", 404);
+    if(await actorIsBlocked(req))return jsonError("Reactions have been temporarily restricted.",403);
     const guest = guestIdentity(req);
     const db = database();
     const existing = await db.query<{reaction:string}>(

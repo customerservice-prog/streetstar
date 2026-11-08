@@ -20,11 +20,12 @@ StreetStar is an independent, mobile-first video discovery and urban entertainme
 
 ## Community and account limitations
 
-- Accounts currently use unverified email addresses with strong salted-password hashing. Email confirmation and automatic password-reset emails require a verified sending provider and are not yet active. Do not suggest recovery links exist.
+- Email confirmation and password reset routes, one-time tokens, and UI are implemented, but delivery remains disabled until StreetStar has its own verified email sender plus `RESEND_API_KEY` and `STREETSTAR_FROM_EMAIL`. Never use another project's domain or promise an email was sent when delivery is unavailable.
 - Signed-in submissions enter the creator dashboard only if their submitted email matches the member account. Existing guest submissions cannot be claimed simply by registering with that email.
 - Approved comments from signed-in members trigger in-app notifications; guest commenters cannot receive private reply alerts.
-- Trending reflects deduplicated daily play starts, approved comments and reactions; it does not measure verified unique individuals, watch duration or advertising impressions.
-- Keep database backups and add anti-abuse controls (WAF/rate limiting and bot checks) before heavy traffic.
+- Trending uses deduplicated daily play starts, approved comments and reactions. `/admin/analytics` reports directly hosted video watch-time separately, but cannot measure YouTube or Vimeo embed duration accurately.
+- Moderation supports manually triggered 24-hour member or network restrictions. Network identifiers can be shared or spoofed if proxy headers are not trustworthy; stronger WAF/CAPTCHA and independent abuse review are required before heavy traffic.
+- Keep database backups before heavy traffic.
 
 ## Run locally
 
@@ -59,3 +60,19 @@ Submitted videos must be reviewed before publishing. Only publish media you are 
 ## Independent project
 
 This repository is for StreetStar only. No code, database, branding, deployment, or configuration is shared with other websites.
+
+
+## StreetStar email setup (required before recovery works)
+
+1. Register or select a **StreetStar-owned** sending domain and finish the provider's DNS verification steps.
+2. Set server-only `RESEND_API_KEY` and `STREETSTAR_FROM_EMAIL` to a sender on that verified domain in Railway. Never expose the key in client JavaScript.
+3. Ensure `NEXT_PUBLIC_SITE_URL` is the public HTTPS StreetStar origin. Test verification and password reset with an email address you control.
+4. Until configured, `/api/member/email` reports `emailEnabled: false`; requests return 503 and **no mail is sent**. Existing registered members can request verification once configuration is complete.
+5. StreetStar in-app alerts do not require the email provider; email or push alerts are not yet enabled.
+
+## Admin analytics and safety
+
+- `/admin/analytics` shows actual play starts, seven-day trends, pseudonymous browser IDs, native watch-time, completion reports and per-video performance.
+- `/admin/comments` supports review, hiding, suspicious link indicators, abuse reports, and temporary network or account restrictions. Blocks are best effort and network bans can affect shared IPs.
+- Watch-time reports are browser estimates for HTML5-hosted videos only. Progress is capped and throttled server-side, and can still be manipulated by clients. Do not treat these as audited media impressions.
+- There are no production advertising payments, creator revenue shares, automatic payouts, verified rights contracts or copyright detection. Do not publish monetization promises until these are safely implemented.

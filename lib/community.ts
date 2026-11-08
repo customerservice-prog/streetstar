@@ -1,4 +1,5 @@
 import { createHmac, randomBytes } from "node:crypto";
+import { isIP } from "node:net";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getStory } from "@/lib/db";
@@ -15,9 +16,9 @@ function digest(value: string): string {
 export function actorHash(req: NextRequest): string {
   // This is a basic best-effort abuse throttle, not a substitute for an
   // edge rate limiter/CAPTCHA. Never store the plain client address.
-  const ip = req.headers.get("x-real-ip")
-    || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-    || "unknown";
+  const real=req.headers.get("x-real-ip")?.trim()||"";
+  const forwarded=req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"";
+  const ip=isIP(real)?real:(isIP(forwarded)?forwarded:"unknown");
   return digest("actor:" + ip);
 }
 
@@ -53,6 +54,23 @@ export function sameOrigin(req: NextRequest): boolean {
     const host = req.headers.get("host");
     return Boolean(host && new URL(origin).host.toLowerCase() === host.toLowerCase());
   } catch { return false; }
+}
+
+export function hasNetworkIdentity(req:NextRequest):boolean{
+  const real=req.headers.get("x-real-ip")?.trim()||"";
+  const forwarded=req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()||"";
+  return Boolean(isIP(real)||isIP(forwarded));
+}
+export function actorHashIsUnknown(value:string):boolean{return value===digest("actor:unknown");}
+
+export async function actorIsBlocked(req:NextRequest):Promise<boolean>{
+  if(!hasNetworkIdentity(req))return false;
+  const {database}=await import("@/lib/db");
+  const result=await database().query(
+    "SELECT 1 FROM moderation_blocks WHERE actor_hash=$1 AND blocked_until>NOW() LIMIT 1",
+    [actorHash(req)]
+  );
+  return result.rows.length>0;
 }
 
 export async function publishedVideo(slug: string): Promise<boolean> {

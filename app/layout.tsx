@@ -6,6 +6,7 @@ import "./globals.css";
 import "./editorial-v3.css";
 import "./community.css";
 import "./member.css";
+import "./analytics.css";
 
 export const metadata: Metadata = {
   title: { default: "StreetStar | The Culture Doesn't Wait", template: "%s | StreetStar" },
