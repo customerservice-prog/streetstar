@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "node scripts/init-db.mjs && next start --hostname 0.0.0.0 --port ${PORT:-3000}",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "audit:colors": "node scripts/check-colors.mjs"
   },
   "dependencies": {
     "next": "^15.5.0",
