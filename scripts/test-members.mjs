@@ -48,4 +48,41 @@ assert.ok(note.data.notifications.some(x=>x.kind==="approved"));
 const update=await call("/api/member/profile","PATCH",{displayName:"UpdatedTester"},memberCookie);check(update,200);
 const updated=await call("/api/member/auth","GET",undefined,memberCookie);
 assert.equal(updated.data.member.displayName,"UpdatedTester");
-console.log("StreetStar member and trending integration checks passed.");
+const emailOther="ci-other-"+random().slice(0,12)+"@example.invalid";
+const otherPass=random();
+const other=await call("/api/member/auth","POST",{action:"register",email:emailOther,displayName:"ReplyTester",password:otherPass});
+check(other,200);
+const reply=await call("/api/comments","POST",{
+  slug,parentId:comment.id,name:"SomeoneElse",body:"A test reply to the member."
+},other.cookie);
+check(reply,201);
+const queueAfter=await call("/api/admin/comments","GET",undefined,admin.cookie);
+const replyRow=queueAfter.data.comments.find(x=>x.body==="A test reply to the member.");
+assert.ok(replyRow);
+assert.equal(replyRow.name,"ReplyTester");
+const approveReply=await call("/api/admin/comments","PATCH",{type:"comment",id:replyRow.id,status:"approved"},admin.cookie);
+check(approveReply,200);
+const replyNotes=await call("/api/member/notifications","GET",undefined,memberCookie);
+assert.ok(replyNotes.data.notifications.some(x=>x.kind==="reply"&&x.actorName==="ReplyTester"));
+const noteId=replyNotes.data.notifications.find(x=>x.kind==="reply").id;
+const markRead=await call("/api/member/notifications","PATCH",{id:noteId},memberCookie);
+check(markRead,200);
+
+const submission=await call("/api/submissions","POST",{
+  artist:"CommunityTester",email,title:"Account-linked video submission",
+  category:"Culture",videoUrl:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
+  notes:"Test account submission",website:""
+},memberCookie);
+check(submission,201);
+const history=await call("/api/member/library","GET",undefined,memberCookie);
+assert.ok(history.data.submissions.some(x=>x.title==="Account-linked video submission"));
+
+const unSave=await call("/api/member/library","POST",{slug,saved:false},memberCookie);
+check(unSave,200);
+const removed=await call("/api/member/profile","DELETE",{password:pass,confirm:"DELETE"},memberCookie);
+check(removed,200);
+const afterDelete=await call("/api/member/auth","GET",undefined,memberCookie);
+assert.equal(afterDelete.data.member,null);
+const unauthorized=await call("/api/member/library","GET",undefined,memberCookie);
+check(unauthorized,401);
+console.log("StreetStar member, reply notification and trending integration checks passed.");

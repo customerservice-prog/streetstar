@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2, Send } from "lucide-react";
 
 const initial = { artist: "", email: "", title: "", category: "Music", videoUrl: "", notes: "", website: "" };
@@ -11,6 +11,17 @@ export function SubmitForm() {
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
 
+  useEffect(()=>{
+    void fetch("/api/member/auth",{cache:"no-store"}).then(r=>r.json()).then(data=>{
+      if(data.member){
+        setForm(previous=>({
+          ...previous,
+          artist:previous.artist||data.member.displayName,
+          email:previous.email||data.member.email
+        }));
+      }
+    }).catch(()=>{});
+  },[]);
   const set = (name: keyof typeof initial, value: string) => setForm(previous => ({ ...previous, [name]: value }));
 
   async function handleSubmit(event: FormEvent) {

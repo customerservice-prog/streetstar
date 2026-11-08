@@ -36,7 +36,7 @@ export function VideoPlayer({ story }: { story: Story }) {
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({slug:story.slug}),
       keepalive:true
-    }).catch(()=>{});
+    }).then(response=>{if(response.ok)window.dispatchEvent(new Event("streetstar:played"));}).catch(()=>{});
   };
   return (
     <div className="player">

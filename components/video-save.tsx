@@ -25,6 +25,15 @@ export function VideoSave({slug}:{slug:string}){
     }).catch(()=>{if(!canceled)setSignedIn(false);});
     return ()=>{canceled=true;};
   },[slug]);
+  useEffect(()=>{
+    const update=()=>{
+      void fetch("/api/video-stats?slug="+encodeURIComponent(slug),{cache:"no-store"})
+        .then(r=>r.json()).then(info=>{if(Number.isInteger(info.plays))setPlays(info.plays);})
+        .catch(()=>{});
+    };
+    window.addEventListener("streetstar:played",update);
+    return ()=>window.removeEventListener("streetstar:played",update);
+  },[slug]);
   async function toggle(){
     if(!signedIn||busy)return;
     setBusy(true);setError("");

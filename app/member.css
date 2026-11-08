@@ -142,3 +142,8 @@
   .trending-preview{padding:19px}
   .trending-preview h2{font-size:43px}
 }
+
+.watch-social-extras{display:inline-flex;align-items:center;flex-wrap:wrap;gap:12px}
+.watch-actions{flex-wrap:wrap;row-gap:12px}
+.watch-save-button:disabled{opacity:.55;cursor:wait}
+.watch-social-extras small{color:#e9b1b1}
