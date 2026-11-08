@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Menu, Play, Search, Star, Zap } from "lucide-react";
+import { ArrowUpRight, Menu, Play, Search, Star, UserRound, Zap } from "lucide-react";
 import { AccountIndicator } from "@/components/account-indicator";
 
 export function SiteHeader() {
