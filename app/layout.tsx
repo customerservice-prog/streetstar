@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   description: "StreetStar is an independent destination for music, viral moments, interviews, sports and urban culture.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   openGraph: { title: "StreetStar", description: "The culture doesn't wait. Neither do we.", type: "website" },
-  robots: { index: true, follow: true }
+  robots: { index: true, follow: true },
+  icons: { icon: "/favicon.svg" }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
