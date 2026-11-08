@@ -3,25 +3,27 @@ import path from "node:path";
 import pg from "pg";
 
 if (!process.env.DATABASE_URL) {
-  console.error("DATABASE_URL is required to start StreetStar in production.");
+  console.error("DATABASE_URL is required to start StreetStar.");
   process.exit(1);
 }
-
-const client = new pg.Client({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 8000 });
 const schema = await fs.readFile(path.resolve("database/schema.sql"), "utf8");
-let error;
-for (let attempt = 1; attempt <= 6; attempt++) {
+let ready = false;
+for (let attempt = 1; attempt <= 8; attempt++) {
+  const client = new pg.Client({ connectionString: process.env.DATABASE_URL, connectionTimeoutMillis: 8000 });
   try {
     await client.connect();
     await client.query(schema);
-    await client.end();
+    ready = true;
     console.log("StreetStar database schema verified.");
-    process.exit(0);
+    break;
   } catch (e) {
-    error = e;
     console.error("Database initialization attempt " + attempt + " failed: " + (e?.code || e?.message || "unknown"));
-    if (attempt < 6) await new Promise(resolve => setTimeout(resolve, 4000));
+    if (attempt < 8) await new Promise(resolve => setTimeout(resolve, 4000));
+  } finally {
+    await client.end().catch(() => {});
   }
 }
-console.error("Database initialization failed. Not starting an unconfigured public service.");
-process.exit(1);
+if (!ready) {
+  console.error("Database initialization failed. Refusing to start the app.");
+  process.exit(1);
+}
