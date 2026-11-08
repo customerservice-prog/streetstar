@@ -48,3 +48,53 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS login_attempts_actor_created_at_idx ON login_attempts (actor_hash, created_at DESC);
+
+
+-- StreetStar community features. These migrations are idempotent so Railway startup
+-- can initialize them on each new deployment without destroying existing comments.
+CREATE TABLE IF NOT EXISTS video_comments (
+  id BIGSERIAL PRIMARY KEY,
+  video_slug TEXT NOT NULL,
+  parent_id BIGINT REFERENCES video_comments(id) ON DELETE SET NULL,
+  author_name VARCHAR(40) NOT NULL,
+  body VARCHAR(1200) NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'hidden')),
+  actor_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  reviewed_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS video_comments_slug_status_idx
+  ON video_comments (video_slug, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS video_comments_actor_idx
+  ON video_comments (actor_hash, created_at DESC);
+CREATE INDEX IF NOT EXISTS video_comments_pending_idx
+  ON video_comments (status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS comment_likes (
+  comment_id BIGINT NOT NULL REFERENCES video_comments(id) ON DELETE CASCADE,
+  guest_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (comment_id, guest_hash)
+);
+CREATE INDEX IF NOT EXISTS comment_likes_comment_idx ON comment_likes(comment_id);
+
+CREATE TABLE IF NOT EXISTS comment_reports (
+  id BIGSERIAL PRIMARY KEY,
+  comment_id BIGINT NOT NULL REFERENCES video_comments(id) ON DELETE CASCADE,
+  guest_hash TEXT NOT NULL,
+  reason TEXT NOT NULL CHECK (reason IN ('spam', 'harassment', 'privacy', 'other')),
+  details VARCHAR(500) NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','reviewed','resolved')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE (comment_id, guest_hash)
+);
+CREATE INDEX IF NOT EXISTS comment_reports_status_idx ON comment_reports(status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS video_reactions (
+  video_slug TEXT NOT NULL,
+  guest_hash TEXT NOT NULL,
+  reaction TEXT NOT NULL CHECK (reaction IN ('fire','love','wow')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(video_slug, guest_hash)
+);
+CREATE INDEX IF NOT EXISTS video_reactions_slug_idx ON video_reactions(video_slug);
