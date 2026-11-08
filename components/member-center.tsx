@@ -180,7 +180,7 @@ export function MemberCenter(){
               <label>DISPLAY NAME<input required minLength={2} maxLength={40} value={displayName} onChange={e=>setDisplayName(e.target.value)}/></label>
               <p className="member-readonly">ACCOUNT EMAIL: {member.email} · {member.emailVerified?"Verified email":"Email not verified"} · Email changes aren't available yet.</p>
               {emailEnabled&&!member.emailVerified&&<p className="member-help-link"><Link href="/account/security?mode=verify"><Mail size={16}/> SEND EMAIL VERIFICATION LINK <ArrowRight size={14}/></Link></p>}
-              {emailEnabled&&<p className="member-help-link"><Link href="/account/security?mode=reset"><KeyRound size={16}/> PASSWORD RECOVERY <ArrowRight size={14}/></Link></p> 
+              {emailEnabled&&<p className="member-help-link"><Link href="/account/security?mode=reset"><KeyRound size={16}/> PASSWORD RECOVERY <ArrowRight size={14}/></Link></p>}
               <label className="member-toggle"><input type="checkbox" checked={member.notificationsEnabled} onChange={e=>void toggleNotifications(e.target.checked)} disabled={busy}/><span>Enable in-app notifications for replies and approvals</span></label>
               <h3>CHANGE PASSWORD (OPTIONAL)</h3>
               <label>CURRENT PASSWORD<input type="password" autoComplete="current-password" value={currentPassword} onChange={e=>setCurrentPassword(e.target.value)}/></label>
