@@ -386,3 +386,21 @@ img{display:block;max-width:100%}
 .admin-item{flex-direction:column;align-items:flex-start;padding:18px}
 .admin-publish{padding:18px}
 }
+
+
+.policy-page{max-width:900px;padding-top:65px;padding-bottom:100px}
+.policy-page h1,.report-heading h1{font:900 clamp(55px,8vw,105px)/.9 "Barlow Condensed",Impact,sans-serif;margin:15px 0 10px}
+.policy-page h2{font:800 31px/1 "Barlow Condensed",Impact,sans-serif;margin:38px 0 12px;color:var(--accent)}
+.policy-page p,.report-page>p{color:#c3c5c7;line-height:1.85;font-size:14px}
+.policy-page a,.report-page>p a{color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.policy-date{color:#8e9298!important;font-size:12px!important}
+.policy-end{border-top:1px solid var(--line);padding-top:27px;margin-top:45px}
+.report-page{max-width:900px;padding-top:45px;padding-bottom:100px}
+.report-heading{display:flex;align-items:center;gap:25px;margin-top:52px}
+.report-heading>svg{color:var(--accent);flex:none}
+.report-heading h1{margin:5px 0 0}
+.report-form{padding:30px;margin-top:28px;border:1px solid #34373a;background:#17191c}
+.admin-stats{grid-template-columns:repeat(4,1fr)}
+.admin-tabs{flex-wrap:wrap}
+.admin-item-main{min-width:0;overflow-wrap:anywhere}
+@media(max-width:560px){.report-form{padding:20px 15px}.report-heading{gap:10px}.policy-page{padding-top:40px}.admin-stats{grid-template-columns:repeat(2,1fr)}}
