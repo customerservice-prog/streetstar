@@ -3,9 +3,9 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
-  ArrowDown, ArrowRight, ArrowUpRight, Clapperboard, Flame,
-  Headphones, Play, Radio, Search, SlidersHorizontal, Sparkles,
-  TrendingUp, X, Star, Zap, MoveUpRight
+  ArrowDown, ArrowRight, ArrowUpRight, Check, Clapperboard,
+  Flame, Headphones, Play, Search, SlidersHorizontal, Sparkles,
+  Star, X, Zap
 } from "lucide-react";
 import { categories, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
@@ -17,171 +17,143 @@ export function HomeFeed({ stories }: { stories: Story[] }) {
   const [sort, setSort] = useState("newest");
 
   const lead = stories.find(item => item.featured) || stories[0];
-  const secondary = stories.filter(item => item.slug !== lead?.slug).slice(0, 2);
+  const nextUp = stories.filter(item => item.slug !== lead?.slug).slice(0, 2);
+  const promotedSlugs = useMemo(() =>
+    new Set([lead?.slug, ...nextUp.map(item => item.slug)].filter(Boolean)),
+    [lead?.slug, nextUp.map(item => item.slug).join("|")]
+  );
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const matching = stories.filter(item =>
-      (category === "All" || item.category === category) &&
-      (!q || (item.title + " " + item.artist + " " + item.category + " " + item.description).toLowerCase().includes(q))
-    );
-    return [...matching].sort((a, b) =>
-      sort === "az" ? a.title.localeCompare(b.title) : Date.parse(b.createdAt) - Date.parse(a.createdAt)
-    );
-  }, [stories, category, search, sort]);
+    // On the default feed, avoid showing the three prominently featured items again.
+    // With fewer than 7 stories, or on an explicit search/filter, show the full library.
+    const library = category === "All" && !q && stories.length >= 7
+      ? stories.filter(item => !promotedSlugs.has(item.slug))
+      : stories;
+
+    return library
+      .filter(item => (category === "All" || item.category === category) &&
+        (!q || (item.title + " " + item.artist + " " + item.category + " " + item.description).toLowerCase().includes(q)))
+      .sort((a, b) =>
+        sort === "az" ? a.title.localeCompare(b.title) : Date.parse(b.createdAt) - Date.parse(a.createdAt));
+  }, [stories, category, search, sort, promotedSlugs]);
+
+  const applyCategory = (next: string) => {
+    setCategory(next);
+    document.getElementById("discover")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <main className="streetstar-home">
-      <section className="showcase-hero" aria-label="Featured StreetStar stories">
-        <div className="showcase-background" aria-hidden="true">
-          <PosterImage src={lead?.posterUrl} loading="eager" />
+    <main className="streetstar-home streetstar-v3">
+      <section className="v3-front container" id="spotlight" aria-label="StreetStar front page">
+        <div className="v3-masthead">
+          <span className="v3-masthead-left"><span className="v3-live-dot" /> THE FRONT PAGE <span className="v3-masthead-slash">/</span> THE CULTURE IN MOTION</span>
+          <span className="v3-masthead-right">INDEPENDENT VOICES. BIG MOMENTS. <Star size={13} fill="currentColor" /></span>
         </div>
-        <div className="showcase-scrim" aria-hidden="true" />
-        <div className="showcase-glow showcase-glow-one" aria-hidden="true" />
-        <div className="showcase-glow showcase-glow-two" aria-hidden="true" />
-        <div className="showcase-gridlines" aria-hidden="true" />
-
-        <div className="container showcase-inner">
-          <div className="showcase-topline">
-            <span className="showcase-live"><span className="live-dot" /> THE CULTURE DOESN&apos;T WAIT</span>
-            <span className="showcase-edition">INDEPENDENT VIDEO CULTURE <span className="showcase-topline-divider">/</span> EST. 2026</span>
-          </div>
-
-          <div className="showcase-body">
-            <div className="showcase-copy">
-              <div className="showcase-intro"><Zap size={14} fill="currentColor" /> A DIFFERENT KIND OF FRONT PAGE <span className="showcase-intro-line" /></div>
-              <h1 className="showcase-headline">
-                <span>STREET</span>
-                <span className="outline-line">LEVEL<span className="headline-period">.</span></span>
-                <span className="lime-line">STAR</span>
-                <span>POWER<span className="headline-period">.</span></span>
-              </h1>
-              <p className="showcase-description">The stories everyone&apos;s talking about. The artists everyone will know. Culture lives here — and it never stands still.</p>
-              <div className="showcase-buttons">
-                {lead && <Link href={"/watch/" + lead.slug} className="showcase-primary">
-                  <span className="showcase-primary-icon"><Play size={18} fill="currentColor" /></span>
-                  WATCH FEATURED VIDEO
-                  <ArrowUpRight size={18} />
-                </Link>}
-                <Link href="#discover" className="showcase-secondary">EXPLORE THE FEED <ArrowDown size={17} /></Link>
-              </div>
+        <div className="v3-front-grid">
+          {lead ? (
+            <Link href={"/watch/" + lead.slug} className="v3-lead-story">
+              <PosterImage src={lead.posterUrl} alt="" loading="eager" />
+              <span className="v3-lead-shade" />
+              <span className="v3-lead-grain" aria-hidden="true"/>
+              <span className="v3-lead-top">
+                <span className="v3-featured-pill"><Star size={14} fill="currentColor" /> COVER STORY</span>
+                <span className="v3-featured-issue">STREETSTAR / 001</span>
+              </span>
+              <span className="v3-lead-play" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
+              <span className="v3-lead-copy">
+                <span className="v3-lead-category"><span>{lead.category.toUpperCase()}</span> / {lead.artist || "StreetStar"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
+                <span className="v3-lead-title">{lead.title}</span>
+                <span className="v3-lead-link"><span><Play size={16} fill="currentColor" /></span> WATCH FEATURED VIDEO <ArrowUpRight size={18}/></span>
+              </span>
+              <span className="v3-lead-corner" aria-hidden="true">S / S</span>
+            </Link>
+          ) : (
+            <div className="v3-lead-empty">
+              <Star size={50} fill="currentColor" /><h1>THE NEXT STORY STARTS HERE.</h1>
+              <Link className="button button-accent" href="/submit">SUBMIT A VIDEO <ArrowUpRight size={17}/></Link>
             </div>
-
-            {lead && <Link href={"/watch/" + lead.slug} className="showcase-feature-card">
-              <div className="showcase-card-head">
-                <span><span className="tiny-lime-dot" /> EDITOR&apos;S PICK</span>
-                <span className="showcase-card-serial">FEATURE / 001</span>
-              </div>
-              <div className="showcase-card-image">
-                <PosterImage src={lead.posterUrl} alt="" loading="eager" />
-                <span className="showcase-card-play"><Play size={20} fill="currentColor" /></span>
-                <span className="showcase-card-corner"><MoveUpRight size={18}/></span>
-              </div>
-              <div className="showcase-card-copy">
-                <div className="showcase-card-meta">
-                  <span>{lead.category.toUpperCase()} / {lead.artist.toUpperCase()}</span>
-                  {lead.isDemo && <span className="demo-pill">DEMO</span>}
-                </div>
-                <h2>{lead.title}</h2>
-                <span className="showcase-card-link">WATCH THE FEATURE <ArrowUpRight size={17} /></span>
-              </div>
-            </Link>}
-          </div>
-
-          <div className="showcase-bottomline">
-            <div className="showcase-bottom-categories">
-              <span><Star size={14} fill="currentColor" /> MUSIC</span>
-              <span><Flame size={14} /> VIRAL</span>
-              <span><Radio size={14} /> CULTURE</span>
-              <span><Headphones size={14} /> ORIGINAL VOICES</span>
+          )}
+          <aside className="v3-front-aside">
+            <div className="v3-front-identity">
+              <div className="v3-front-identity-top"><span>STREETSTAR</span><span>EST. 2026 <Zap size={13} fill="currentColor"/></span></div>
+              <h2>MORE THAN<br/><em>A MOMENT.</em><br/>IT&apos;S THE<br/>CULTURE<span>.</span></h2>
+              <p>New sounds, bold stories, and the moments that move us.</p>
+              <div className="v3-front-identity-bottom"><span>THE WORLD IS WATCHING</span><Star size={24} fill="currentColor" /></div>
             </div>
-            <Link href="#spotlight" className="showcase-scroll">KEEP EXPLORING <span><ArrowDown size={15}/></span></Link>
-          </div>
+            <div className="v3-up-next">
+              <div className="v3-up-next-heading"><span><Flame size={15}/> ON OUR RADAR</span><span>{String(nextUp.length).padStart(2, "0")} PICKS</span></div>
+              {nextUp.map((item, index) => (
+                <Link href={"/watch/" + item.slug} className="v3-next-item" key={item.slug}>
+                  <span className="v3-next-thumb"><PosterImage src={item.posterUrl} alt="" /><span className="v3-next-play"><Play size={14} fill="currentColor" /></span></span>
+                  <span className="v3-next-copy">
+                    <span className="v3-next-cat">{item.category.toUpperCase()} {item.isDemo && <span className="demo-pill">DEMO</span>}</span>
+                    <strong>{item.title}</strong>
+                    <span className="v3-next-watch">WATCH STORY <ArrowUpRight size={13}/></span>
+                  </span>
+                  <span className="v3-next-rank">0{index + 1}</span>
+                </Link>
+              ))}
+              <Link className="v3-next-discover" href="#discover">EXPLORE THE FULL FEED <ArrowRight size={15}/></Link>
+            </div>
+          </aside>
         </div>
-        <span className="showcase-vertical-word" aria-hidden="true">STREETSTAR / 2026</span>
+        <div className="v3-front-bottom">
+          <span>BUILT FOR THE UNEXPECTED. CURATED FOR THE CULTURE.</span>
+          <a href="#discover">SCROLL TO DISCOVER <ArrowDown size={17}/></a>
+        </div>
       </section>
 
-      <div className="premium-ticker" aria-label="StreetStar content categories">
-        <div className="premium-ticker-track">
-          {Array.from({ length: 2 }, (_, copy) => (
-            <div className="premium-ticker-sequence" key={copy} aria-hidden={copy === 1}>
-              <span>THE CULTURE MOVES HERE</span><Star fill="currentColor" />
-              <span>NEW MUSIC</span><Star fill="currentColor" />
-              <span>REAL STORIES</span><Star fill="currentColor" />
-              <span>FRESH PERSPECTIVES</span><Star fill="currentColor" />
-            </div>
-          ))}
+      <div className="v3-ribbon" aria-label="StreetStar topics">
+        <div className="v3-ribbon-track" aria-hidden="true">
+          {Array.from({length:2},(_,i)=><div className="v3-ribbon-sequence" key={i}>
+            <span>MUSIC</span><Star size={13} fill="currentColor"/><span>VIRAL</span><Star size={13} fill="currentColor"/>
+            <span>CULTURE</span><Star size={13} fill="currentColor"/><span>REAL STORIES</span><Star size={13} fill="currentColor"/>
+            <span>STREETSTAR</span><Star size={13} fill="currentColor"/>
+          </div>)}
         </div>
       </div>
 
-      {secondary.length > 0 && <section className="container spotlight-section" id="spotlight">
-        <div className="spotlight-heading">
-          <div><span className="micro-label"><span className="section-marker" /> FRESHLY SELECTED</span><h2>ON OUR <span>RADAR.</span></h2></div>
-          <div className="spotlight-side-note"><Sparkles size={16}/><span>THE NEXT THING YOU NEED TO SEE.</span></div>
+      <section className="container v3-discover" id="discover">
+        <div className="v3-section-head">
+          <div><div className="v3-eyebrow"><span className="v3-eyebrow-line"/> THE LATEST / THE UNMISSABLE</div><h2>THE <span>DROP.</span></h2><p>The new voices, the headlines, and everything making noise right now.</p></div>
+          <div className="v3-section-stamp" aria-hidden="true"><Star size={31} fill="currentColor"/><span>STREETSTAR<br/>ORIGINAL FEED</span></div>
         </div>
-        <div className="spotlight-grid">
-          {secondary.map((item, index) => (
-            <Link href={"/watch/" + item.slug} className="spotlight-story" key={item.slug}>
-              <div className="spotlight-image">
-                <PosterImage src={item.posterUrl} alt="" />
-                <div className="spotlight-image-vignette" />
-                <span className="spotlight-rank">0{index + 1}</span>
-                <span className="spotlight-play"><Play size={22} fill="currentColor" /></span>
-              </div>
-              <div className="spotlight-story-copy">
-                <div className="spotlight-story-meta"><span>{item.category.toUpperCase()}</span><span className="spotlight-separator">/</span><span>{item.artist}</span>{item.isDemo && <span className="demo-pill">DEMO</span>}</div>
-                <h3>{item.title}</h3>
-                <span className="spotlight-arrow"><ArrowUpRight size={21} /></span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>}
-
-      <section className="container discover-section discover-premium" id="discover">
-        <div className="discover-heading">
-          <div>
-            <p className="micro-label"><span className="section-marker" /> YOUR WORLD, YOUR FEED</p>
-            <h2>FIND YOUR <span>NEXT</span><br/>OBSESSION<span className="headline-period">.</span></h2>
-            <p className="discover-lede">Dive into music, big moments, bold voices, and everything making noise.</p>
-          </div>
-          <div className="discover-heading-art" aria-hidden="true"><span className="discover-art-circle"><Star size={57} fill="currentColor"/></span><span>SS / FEED</span></div>
-        </div>
-
-        <div className="feed-toolbar">
-          <div className="categories" aria-label="Filter by category">
+        <div className="v3-filter-bar">
+          <div className="v3-filter-label"><Sparkles size={15}/> EXPLORE BY CATEGORY</div>
+          <div className="categories" aria-label="Filter videos by category">
             {categories.map(item =>
-              <button type="button" key={item} onClick={() => setCategory(item)}
-                className={"filter-chip " + (category === item ? "selected" : "")} aria-pressed={category === item}>
-                {item === "All" && <Zap size={13} fill="currentColor" />} {item}
+              <button type="button" key={item} className={"filter-chip " + (category === item ? "selected" : "")}
+                aria-pressed={category === item} onClick={() => applyCategory(item)}>
+                {item === "All" && <Check size={13}/>} {item}
               </button>
             )}
           </div>
           <div className="search-sort">
-            <label className="feed-search"><Search size={17}/><input placeholder="Search stories, artists..." value={search} onChange={e => setSearch(e.target.value)} aria-label="Search videos" />{search && <button type="button" aria-label="Clear search" onClick={() => setSearch("")}><X size={15}/></button>}</label>
-            <label className="sort-control"><SlidersHorizontal size={17}/><select aria-label="Sort videos" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest first</option><option value="az">A–Z</option></select></label>
+            <label className="feed-search"><Search size={18}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search videos or artists" aria-label="Search videos or artists" />{search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search"><X size={16}/></button>}</label>
+            <label className="sort-control"><SlidersHorizontal size={17}/><select aria-label="Sort videos" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest</option><option value="az">A–Z</option></select></label>
           </div>
         </div>
-        <div className="feed-result-header" id="latest"><span><Clapperboard size={18}/> THE LATEST DROPS <span className="feed-result-count">{String(filtered.length).padStart(2, "0")}</span></span><span>STAY IN THE LOOP <ArrowDown size={15}/></span></div>
+
+        <div className="v3-feed-head" id="latest"><span><Clapperboard size={18}/> LATEST DROPS</span><span>{filtered.length} {filtered.length === 1 ? "VIDEO" : "VIDEOS"}</span></div>
         {filtered.length ?
-          <div className="video-grid">{filtered.map((story, index) => <VideoCard story={story} key={story.slug} index={index}/>)}</div>
-          : <div className="no-results"><Search size={35}/><h3>NO STORIES FOUND</h3><p>Try another search or category.</p><button className="button button-outline" onClick={() => { setSearch(""); setCategory("All"); }}>RESET FILTERS</button></div>}
+          <div className="video-grid v3-video-grid">
+            {filtered.map((story, index) => <VideoCard story={story} key={story.slug} index={index}/>)}
+          </div>
+          : <div className="no-results"><Search size={37}/><h3>NO STORIES FOUND</h3><p>Try another category or search term.</p><button className="button button-outline" onClick={() => { setSearch(""); setCategory("All"); }}>RESET FILTERS</button></div>}
       </section>
 
-      <section className="container creator-banner creator-banner-premium">
-        <div className="creator-orbit orbit-one" aria-hidden="true"/><div className="creator-orbit orbit-two" aria-hidden="true"/>
-        <div className="creator-halo" aria-hidden="true" />
-        <div className="creator-message">
-          <p className="micro-label"><span className="section-marker" /> CREATORS, THE STAGE IS YOURS</p>
-          <h2>GOT THE<br/><em>NEXT BIG</em><br/>THING<span className="headline-period">?</span></h2>
-          <p>Your music. Your story. Your moment. Send your video to our editorial team and put it on our radar.</p>
-          <Link href="/submit" className="button button-accent">GET ON OUR RADAR <ArrowUpRight size={18}/></Link>
+      <section className="container v3-creator">
+        <div className="v3-creator-back" aria-hidden="true"><span>YOUR STORY</span><span>YOUR STAGE</span></div>
+        <div className="v3-creator-copy"><span className="v3-eyebrow"><span className="v3-eyebrow-line"/> FOR THE PEOPLE MAKING CULTURE</span>
+          <h2>GOT<br/>SOMETHING<br/><em>REAL?</em></h2>
+          <p>Make some noise. Send your video to the StreetStar editorial team for review.</p>
+          <Link href="/submit" className="v3-creator-cta">SUBMIT YOUR VIDEO <ArrowUpRight size={18}/></Link>
         </div>
-        <div className="creator-graphic"><span>YOUR</span><strong>STAGE.</strong><span>YOUR</span><strong>MOMENT.</strong><div className="creator-star"><Star size={115} fill="currentColor"/></div></div>
-        <div className="creator-banner-bottom">STREETSTAR / THE NEXT GENERATION OF VOICES</div>
+        <div className="v3-creator-badge" aria-hidden="true"><Star size={80} fill="currentColor"/><span>STREETSTAR</span></div>
       </section>
 
-      <div className="container bottom-manifesto"><span>BUILT FOR WHAT&apos;S NEXT.</span><ArrowRight size={22}/><strong>THIS IS STREETSTAR.</strong></div>
+      <div className="container v3-endline"><span><Star size={14} fill="currentColor"/> THE CULTURE DOESN&apos;T WAIT.</span><Link href="#spotlight">BACK TO TOP <ArrowUpRight size={16}/></Link></div>
     </main>
   );
 }
