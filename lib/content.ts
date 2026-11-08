@@ -97,7 +97,7 @@ export const demoStories: Story[] = [
     description: "Concept for behind-the-scenes studio footage.",
     category: "Music",
     videoUrl: demoVideo,
-    posterUrl: "https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=1000&q=85",
+    posterUrl: "/posters/behind-the-beat.svg",
     featured: false,
     createdAt: "2026-11-05T09:00:00.000Z",
     isDemo: true
@@ -109,7 +109,7 @@ export const demoStories: Story[] = [
     description: "Placeholder for cultural storytelling and community features.",
     category: "Culture",
     videoUrl: demoVideo,
-    posterUrl: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1000&q=85",
+    posterUrl: "/posters/the-night-shift.svg",
     featured: false,
     createdAt: "2026-11-04T08:00:00.000Z",
     isDemo: true
