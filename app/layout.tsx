@@ -23,8 +23,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <div className="container footer-top">
             <div className="footer-brand"><Link href="/" className="brand"><span className="brand-mark"><Star size={22} fill="currentColor"/></span><span>STREET<span className="brand-accent">STAR</span><span className="brand-period">.</span></span></Link><p>A new home for the voices, sounds, and moments shaping culture.</p></div>
             <div className="footer-links"><h3>EXPLORE</h3><Link href="/">Home</Link><Link href="/#discover">Discover</Link><Link href="/#latest">Latest drops</Link></div>
-            <div className="footer-links"><h3>CREATE</h3><Link href="/submit">Submit a video <ArrowUpRight size={14}/></Link><Link href="/admin">Publisher login</Link></div>
-            <div className="footer-links"><h3>CONTACT</h3><span>Creator inquiries through our submission page</span><span className="footer-social"><Instagram size={17}/><Youtube size={17}/><Mail size={17}/></span></div>
+            <div className="footer-links"><h3>CREATE</h3><Link href="/submit">Submit a video <ArrowUpRight size={14}/></Link><Link href="/admin">Publisher login</Link><Link href="/report">Report content</Link></div>
+            <div className="footer-links"><h3>CONTACT</h3><span>Creator inquiries through our submission page</span><Link href="/privacy">Privacy policy</Link><Link href="/terms">Terms of use</Link><span className="footer-social"><Instagram size={17}/><Youtube size={17}/><Mail size={17}/></span></div>
           </div>
           <div className="container footer-bottom"><span>© {new Date().getFullYear()} STREETSTAR. ALL RIGHTS RESERVED.</span><span>INDEPENDENT BY DESIGN.</span></div>
         </footer>
