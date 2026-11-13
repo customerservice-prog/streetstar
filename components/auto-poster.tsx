@@ -18,7 +18,7 @@ export function AutoPoster({
   loading?:"lazy"|"eager";
 }) {
   return <span className={"auto-poster auto-poster--"+variant} aria-hidden="true">
-    <span className="auto-poster-halo"/>
+    <span className="auto-poster-halo"><PosterImage src={src} alt="" loading={loading}/></span>
     <PosterImage src={src} alt="" loading={loading}/>
     <span className="auto-poster-frame"/>
   </span>;
