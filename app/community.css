@@ -7,7 +7,7 @@
 }
 .community-eyebrow{
   display:inline-flex;align-items:center;gap:9px;
-  color:#d7fc56;font-size:11px;font-weight:900;
+  color:#fa6135;font-size:11px;font-weight:900;
   letter-spacing:.11em;
 }
 .community-react-panel{
@@ -26,19 +26,19 @@
   padding:11px 12px;background:#101820;color:#ebf0ef;
   transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;
 }
-.community-react-button:hover{transform:translateY(-4px);border-color:#d7fc56;box-shadow:0 9px 22px #0006}
-.community-react-button.selected{border-color:#d7fc56;background:#283325;box-shadow:0 0 0 1px #d7fc565c inset}
+.community-react-button:hover{transform:translateY(-4px);border-color:#fa6135;box-shadow:0 9px 22px #0006}
+.community-react-button.selected{border-color:#fa6135;background:#283325;box-shadow:0 0 0 1px #fa61355c inset}
 .community-react-button>span{font-size:25px;line-height:1.3}
 .community-react-button strong{font-size:11px;text-transform:uppercase}
-.community-react-button small{font-size:11px;color:#d7fc56;font-weight:900}
+.community-react-button small{font-size:11px;color:#fa6135;font-weight:900}
 .community-main-header{
   margin:47px 0 20px;display:flex;align-items:end;justify-content:space-between;gap:15px;
 }
 .community-main-header h2{font-size:clamp(49px,5.4vw,68px);line-height:.92;margin:12px 0 13px;font-weight:900}
-.community-main-header h2 span{color:#d7fc56}
+.community-main-header h2 span{color:#fa6135}
 .community-main-header p{margin:0;color:#c8d1d5;font-size:13px}
 .community-total{display:flex;flex-direction:column;align-items:end;gap:0}
-.community-total strong{color:#d7fc56;font:900 42px/.9 "Barlow Condensed",Impact,sans-serif}
+.community-total strong{color:#fa6135;font:900 42px/.9 "Barlow Condensed",Impact,sans-serif}
 .community-total span{font-size:10px;letter-spacing:.12em;font-weight:900;color:#ccd3d5}
 .discussion-compose{
   background:#171f26;border:1px solid #4f5e66;border-radius:5px;padding:24px;
@@ -46,7 +46,7 @@
 .discussion-compose-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:21px;padding-bottom:14px;border-bottom:1px solid #4c565d}
 .discussion-compose-top span{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.07em;font-weight:900;color:#e8eff0}
 .discussion-compose-top span:last-child{color:#c0ccd1}
-.discussion-compose-top svg{color:#d7fc56}
+.discussion-compose-top svg{color:#fa6135}
 .discussion-compose form,.discussion-report-dialog form{display:flex;flex-direction:column;align-items:stretch;gap:11px}
 .discussion-compose label,.discussion-report-dialog label{font-size:11px;font-weight:900;letter-spacing:.09em;color:#eff2f2}
 .discussion-subtle{color:#aab9bf;font-size:10px;letter-spacing:.035em}
@@ -56,14 +56,14 @@
   padding:13px 14px;resize:vertical;transition:border-color .2s;
 }
 .discussion-compose input::placeholder,.discussion-compose textarea::placeholder,.discussion-report-dialog textarea::placeholder{color:#9caeb8}
-.discussion-compose input:focus,.discussion-compose textarea:focus,.discussion-report-dialog select:focus,.discussion-report-dialog textarea:focus{border-color:#d7fc56;box-shadow:0 0 0 2px #d7fc5620}
+.discussion-compose input:focus,.discussion-compose textarea:focus,.discussion-report-dialog select:focus,.discussion-report-dialog textarea:focus{border-color:#fa6135;box-shadow:0 0 0 2px #fa613520}
 .discussion-compose-bottom{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-top:5px}
 .discussion-compose-bottom small{font-size:11px;color:#c5d1d5;line-height:1.55;max-width:350px}
-.discussion-compose-bottom small a{color:#d7fc56;text-decoration:underline}
+.discussion-compose-bottom small a{color:#fa6135;text-decoration:underline}
 .discussion-compose-bottom .button{font-size:11px;letter-spacing:.045em;padding:13px 17px}
 .discussion-replying{
   display:flex;align-items:center;gap:8px;
-  margin-bottom:17px;background:#2b3040;border-left:3px solid #c4acfa;
+  margin-bottom:17px;background:#2b3040;border-left:3px solid #ffb26a;
   padding:11px 13px;color:#edf0f5;font-size:12px;
 }
 .discussion-replying button{margin-left:auto;background:transparent;border:0;color:#f6f5f7;display:grid;place-items:center}
@@ -76,24 +76,24 @@
   display:flex;align-items:center;justify-content:space-between;gap:12px;
 }
 .discussion-list-head>span{display:inline-flex;align-items:center;gap:9px;font-size:12px;font-weight:900;letter-spacing:.085em}
-.discussion-list-head>span svg{color:#d7fc56}
+.discussion-list-head>span svg{color:#fa6135}
 .discussion-list-head label{display:flex;align-items:center;gap:8px;font-size:11px;color:#bdcbd1}
 .discussion-list-head select{border:0;background:transparent;color:#f4f7f8;font-weight:800;font-size:11px;outline:none;appearance:none;cursor:pointer}
 .discussion-list-head select option{color:#111}
-.discussion-list-head label>svg{color:#d7fc56}
+.discussion-list-head label>svg{color:#fa6135}
 .discussion-loading,.discussion-empty{
   padding:35px 18px;color:#cdd7db;text-align:center;font-size:13px;
 }
 .discussion-loading{display:flex;align-items:center;justify-content:center;gap:10px}
 .discussion-empty{border-bottom:1px solid #48535d}
-.discussion-empty>svg{color:#d7fc56}
+.discussion-empty>svg{color:#fa6135}
 .discussion-empty h3{font-size:35px;margin:12px 0 8px;color:#fff}
 .discussion-empty p{margin:0;line-height:1.5}
 .discussion-list{display:flex;flex-direction:column}
 .discussion-comment{display:flex;gap:14px;padding:23px 0;border-bottom:1px solid #3d4b55}
 .discussion-avatar{
   flex:none;display:grid;place-items:center;width:43px;height:43px;border:1px solid #839c77;
-  color:#d7fc56;background:#2a342b;border-radius:50%;font:900 23px "Barlow Condensed",Impact,sans-serif
+  color:#fa6135;background:#2a342b;border-radius:50%;font:900 23px "Barlow Condensed",Impact,sans-serif
 }
 .discussion-comment-content{min-width:0;flex:1;overflow-wrap:anywhere}
 .discussion-comment-header{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
@@ -103,14 +103,14 @@
 .discussion-comment-content>p{white-space:pre-wrap;font-size:13px;color:#e4e9ec;line-height:1.72;margin:10px 0 11px}
 .discussion-comment-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
 .discussion-comment-actions button{display:flex;align-items:center;gap:6px;color:#c1cbd1;border:0;background:transparent;font-size:10px;font-weight:900;letter-spacing:.055em;padding:5px 0;transition:color .2s}
-.discussion-comment-actions button:hover,.discussion-comment-actions button.active{color:#d7fc56}
+.discussion-comment-actions button:hover,.discussion-comment-actions button.active{color:#fa6135}
 .discussion-replies{margin:16px 0 0;padding-left:14px;border-left:2px solid #677968}
 .discussion-reply{padding:15px 0 12px;border-bottom:0}
 .discussion-reply .discussion-avatar{width:34px;height:34px;font-size:18px}
 .discussion-page-note{padding:13px;color:#b3c2c7;font-size:11px}
 .discussion-footnote{display:flex;align-items:start;gap:10px;color:#b9c7cc;font-size:11px;line-height:1.7;margin-top:20px}
-.discussion-footnote svg{flex:none;color:#d7fc56}
-.discussion-footnote a{color:#d7fc56;text-decoration:underline}
+.discussion-footnote svg{flex:none;color:#fa6135}
+.discussion-footnote a{color:#fa6135;text-decoration:underline}
 .discussion-report-overlay{
   position:fixed;inset:0;z-index:90;display:grid;place-items:center;
   padding:20px;background:#03070bd9;backdrop-filter:blur(5px);
@@ -128,32 +128,32 @@
 .comment-admin{padding-top:42px;padding-bottom:100px;min-height:70vh}
 .comment-admin-top{display:flex;align-items:center;justify-content:space-between;gap:15px;color:#c2d0d5;font-size:11px;letter-spacing:.08em;font-weight:900}
 .comment-admin-top a,.comment-admin-top span{display:flex;align-items:center;gap:8px}
-.comment-admin-top svg{color:#d7fc56}
+.comment-admin-top svg{color:#fa6135}
 .comment-admin-title{display:flex;justify-content:space-between;align-items:end;gap:20px;margin:42px 0 30px}
 .comment-admin-title h1{font-size:clamp(62px,8vw,110px);line-height:.86;margin:14px 0 16px}
-.comment-admin-title h1 span{color:#d7fc56}
+.comment-admin-title h1 span{color:#fa6135}
 .comment-admin-title p:not(.community-eyebrow){color:#c5d2d5;font-size:14px;margin:0}
 .comment-admin-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:15px 0 30px}
 .comment-admin-stats>div{border:1px solid #46535d;background:#192127;display:flex;flex-direction:column;gap:6px;padding:25px}
-.comment-admin-stats strong{font:900 44px "Barlow Condensed",Impact,sans-serif;color:#d7fc56}
+.comment-admin-stats strong{font:900 44px "Barlow Condensed",Impact,sans-serif;color:#fa6135}
 .comment-admin-stats span{font-size:11px;letter-spacing:.09em;font-weight:900;color:#c8d3d8}
 .comment-admin-tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid #48545b;margin-bottom:20px}
 .comment-admin-tabs button{position:relative;display:flex;align-items:center;gap:8px;padding:14px 16px;border:0;border-bottom:2px solid transparent;background:transparent;color:#c7d1d6;font-size:11px;font-weight:900;letter-spacing:.09em}
-.comment-admin-tabs button.active{color:#d7fc56;border-bottom-color:#d7fc56}
-.comment-admin-tabs button span{display:grid;place-items:center;background:#d7fc56;color:#10170c;padding:2px 6px;border-radius:3px}
+.comment-admin-tabs button.active{color:#fa6135;border-bottom-color:#fa6135}
+.comment-admin-tabs button span{display:grid;place-items:center;background:#fa6135;color:#10170c;padding:2px 6px;border-radius:3px}
 .comment-admin-list{display:flex;flex-direction:column;gap:12px}
 .comment-admin-item{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:23px 25px;background:#182128;border:1px solid #48535d;border-radius:4px;overflow-wrap:anywhere}
 .comment-admin-item>div:first-child{min-width:0}
-.comment-admin-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:#c4acfa;font-weight:900;letter-spacing:.085em}
+.comment-admin-meta{display:flex;align-items:center;gap:7px;font-size:10px;color:#ffb26a;font-weight:900;letter-spacing:.085em}
 .comment-admin-item h3{font-size:30px;line-height:1.05;margin:8px 0}
 .comment-admin-item p{font-size:12px;line-height:1.65;color:#d1dcdf}
 .comment-admin-item p.comment-admin-quote{max-width:690px;white-space:pre-wrap;color:#f2f5f3;font-size:14px}
-.comment-admin-item a{display:inline-flex;align-items:center;gap:7px;color:#d7fc56;font-size:10px;font-weight:900;letter-spacing:.04em}
+.comment-admin-item a{display:inline-flex;align-items:center;gap:7px;color:#fa6135;font-size:10px;font-weight:900;letter-spacing:.04em}
 .comment-admin-controls{display:flex;align-items:center;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .comment-admin-controls .button{min-height:38px;padding:10px 12px;font-size:10px}
-.comment-admin-approved{display:flex;gap:7px;align-items:center;color:#d7fc56;font-size:11px;font-weight:900}
+.comment-admin-approved{display:flex;gap:7px;align-items:center;color:#fa6135;font-size:11px;font-weight:900}
 .comment-admin-empty{padding:60px 20px;border:1px dashed #647077;text-align:center;color:#cad4da}
-.comment-admin-empty svg{color:#d7fc56}
+.comment-admin-empty svg{color:#fa6135}
 .comment-admin-empty h2{font-size:40px;color:#fff;margin:15px 0 8px}
 .comment-admin-empty p{font-size:13px;margin:0}
 .comment-admin-policy{font-size:12px;line-height:1.65;color:#b5c3c8;max-width:860px;margin-top:27px}
