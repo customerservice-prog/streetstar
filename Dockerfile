@@ -13,6 +13,6 @@ WORKDIR /app
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
 COPY --from=build /app /app
 RUN chown -R node:node /app
-USER node
+COPY scripts/start-streetstar.sh /app/scripts/start-streetstar.sh
 EXPOSE 3000
-CMD ["sh", "-c", "node scripts/init-db.mjs && exec ./node_modules/.bin/next start --hostname 0.0.0.0 --port ${PORT:-3000}"]
+CMD ["sh", "scripts/start-streetstar.sh"]
