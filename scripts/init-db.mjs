@@ -13,6 +13,22 @@ for (let attempt = 1; attempt <= 8; attempt++) {
   try {
     await client.connect();
     await client.query(schema);
+    // Publish the eight user-provided Bajo Mundo TV Viral clips idempotently
+    // after their Descript share links have been finalized and approved.
+    const manifest = await fs.readFile(path.resolve("database/launch-videos.json"), "utf8").catch(error => {
+      if (error?.code === "ENOENT") return "[]";
+      throw error;
+    });
+    const launchVideos = JSON.parse(manifest);
+    for (const clip of launchVideos) {
+      if (!/^https:\/\/share\.descript\.com\/view\/[A-Za-z0-9_-]+$/.test(clip.videoUrl))
+        throw new Error("Invalid video host URL for " + clip.slug);
+      await client.query(
+        "INSERT INTO videos(slug,title,artist,description,category,video_url,poster_url,featured,status,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'published',$9) ON CONFLICT(slug) DO NOTHING",
+        [clip.slug,clip.title,clip.artist,clip.description,clip.category,clip.videoUrl,clip.posterUrl,Boolean(clip.featured),clip.createdAt]
+      );
+    }
+    if (launchVideos.length) console.log("Bajo Mundo TV Viral launch catalog verified: " + launchVideos.length + " clips.");
     ready = true;
     console.log("StreetStar database schema verified.");
     break;
