@@ -116,3 +116,16 @@
 @media(prefers-reduced-motion:reduce){
  .auto-poster>img{transition:none!important}
 }
+
+
+/* Aspect-aware crop: preserve portrait subjects, zoom landscape frames to
+   eliminate black letterbox bars in the prominent editorial cover. */
+.auto-poster--wide>img{object-fit:cover;max-width:100%;left:0}
+.auto-poster--card.auto-poster--wide>img{object-fit:cover;transform:scale(1.07)}
+.auto-poster--mini.auto-poster--wide>img{object-fit:cover;transform:scale(1.08)}
+.smart-feature .auto-poster--feature.auto-poster--wide>img{
+  object-fit:cover;object-position:center center;transform:scale(1.11)
+}
+@media(prefers-reduced-motion:reduce){
+  .auto-poster--wide>img{transition:none!important}
+}
