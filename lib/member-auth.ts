@@ -34,7 +34,8 @@ export async function issueMemberSession(memberId:string){
   return token;
 }
 export function sessionCookieOptions(){
-  return {httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax" as const,path:"/",maxAge:memberMaxAge};
+  const embedded=process.env.NODE_ENV==="production";
+  return {httpOnly:true,secure:embedded,sameSite:embedded?("none" as const):("lax" as const),partitioned:embedded,path:"/",maxAge:memberMaxAge};
 }
 async function fromToken(token:string|undefined):Promise<Member|null>{
   if(!token||!/^[a-f0-9]{64}$/.test(token))return null;
