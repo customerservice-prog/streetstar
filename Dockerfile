@@ -1,0 +1,18 @@
+# Deterministic build path for Railway when Railpack's build-driver download is unavailable.
+# Production data remains in the attached Postgres service, never in this image.
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY package*.json ./
+RUN npm install --no-audit --no-fund
+COPY . .
+RUN npm run audit:colors && npm run typecheck && node scripts/check-auto-posters.mjs && npm run build
+
+FROM node:22-bookworm-slim AS runner
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
+COPY --from=build /app /app
+RUN chown -R node:node /app
+USER node
+EXPOSE 3000
+CMD ["sh", "-c", "node scripts/init-db.mjs && exec ./node_modules/.bin/next start --hostname 0.0.0.0 --port ${PORT:-3000}"]
