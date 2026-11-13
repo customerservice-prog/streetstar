@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 
 const base = process.env.SMOKE_BASE_URL || "http://127.0.0.1:3000";
-const slug = "after-hours-the-city-never-stops";
+const slug = "arcangel-habla-sobre-los-mexicanos";
 const origin = new URL(base).origin;
 const adminPassword = process.env.ADMIN_PASSWORD;
 if (!adminPassword) throw new Error("ADMIN_PASSWORD required for smoke test");

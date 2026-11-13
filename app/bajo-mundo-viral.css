@@ -17,3 +17,24 @@ body{background:radial-gradient(ellipse 700px 400px at 87% 15%,#fa613510,transpa
 .site-footer{border-color:#fa613540}
 @media(max-width:1180px){.bajo-brand-words{font-size:18px}.bajo-official-logo{width:62px!important;height:59px!important}}
 @media(max-width:620px){.bajo-brand-words{font-size:17px}.bajo-official-logo{width:56px!important;height:56px!important}.site-header .header-row{gap:7px}.bajo-announcement .announcement-center{display:none}}
+
+/* Show native thumbnail for each original clip through Descript's
+   read-only embedded video poster. The click opens our watch page. */
+.v3-lead-story>.viral-clip-poster,
+.v3-next-thumb>.viral-clip-poster,
+.card-art>.viral-clip-poster,
+.player-cover>.viral-clip-poster,
+.v3-lead-story>iframe,
+.v3-next-thumb>iframe,
+.card-art>iframe{
+  position:absolute;inset:0;width:100%;height:100%;border:0;
+  display:block;pointer-events:none;background:#111;
+}
+.v3-lead-story>.viral-clip-poster{filter:brightness(.75);}
+.v3-next-thumb>.viral-clip-poster,.card-art>.viral-clip-poster{filter:brightness(.86);}
+.v3-lead-story .v3-lead-shade{z-index:1}
+.v3-lead-story .v3-lead-grain{z-index:1}
+.v3-lead-story .v3-lead-top,.v3-lead-story .v3-lead-copy{z-index:2}
+.v3-next-thumb .v3-next-play,.card-art .card-play,.card-art .card-category{pointer-events:none}
+.player-cover .viral-clip-poster{z-index:0}
+.player-cover .player-tint,.player-cover .player-center,.player-cover .player-cover-label{z-index:2}

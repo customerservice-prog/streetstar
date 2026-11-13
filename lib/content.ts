@@ -11,7 +11,13 @@ export type Story = {
   isDemo?: boolean;
 };
 
-export const categories = ["All", "Music", "Culture", "Viral", "Sports", "Interviews", "Lifestyle"] as const;
+export const categories = ["All", "Culture", "Viral", "Interviews", "Lifestyle", "Sports", "Music"] as const;
+export const categoryLabels: Record<string, string> = {
+  All: "TODOS", Culture: "FARÁNDULA", Viral: "POLÉMICAS",
+  Interviews: "ENTREVISTAS", Lifestyle: "VIRALES",
+  Sports: "DEPORTES", Music: "MÚSICA"
+};
+export function categoryLabel(value: string): string { return categoryLabels[value] || value; }
 
 const demoVideo = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
 
