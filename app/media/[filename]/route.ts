@@ -34,7 +34,7 @@ async function serve(req:NextRequest,props:Props,head=false){
     if(m[1]){start=Number(m[1]);end=m[2]?Number(m[2]):file.size-1;}
     else{const tail=Number(m[2]);start=Math.max(0,file.size-tail);}
     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start> end||start>=file.size){
-      if(!m || (!m[1]&&!m[2]))return new Response(null,{status:416,headers:{"Content-Range":`bytes */${file.size}`}});
+      return new Response(null,{status:416,headers:{"Content-Range":`bytes */${file.size}`}});
     }
     end=Math.min(end,file.size-1);status=206;
     headers.set("Content-Range",`bytes ${start}-${end}/${file.size}`);
