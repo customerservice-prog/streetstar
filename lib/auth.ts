@@ -47,8 +47,9 @@ export const sessionCookie = {
   name: COOKIE_NAME,
   options: {
     httpOnly: true,
-    sameSite: "lax" as const,
+    sameSite: (process.env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
     secure: process.env.NODE_ENV === "production",
+    partitioned: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: TTL_MS / 1000
   }
