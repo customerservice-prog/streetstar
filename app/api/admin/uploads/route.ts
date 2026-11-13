@@ -6,7 +6,7 @@ import { sameOrigin } from "@/lib/community";
 import { database } from "@/lib/db";
 import {
   MAX_VIDEO_BYTES, MIN_FREE_BYTES, availableStorage, fileExtension,
-  newUploadId, pendingFileName, prepareStorage, storageReady
+  newUploadId, pendingFileName, pendingPosterName, prepareStorage, storageReady, validUploadId
 } from "@/lib/media-storage";
 
 export const runtime="nodejs";
@@ -46,6 +46,14 @@ export async function POST(req:NextRequest){
   let destination="";
   try{
     const free=await availableStorage();
+    // Expired incomplete transfers are never allowed to fill the volume.
+    const expired=await database().query<{id:string;extension:string}>(
+      "DELETE FROM viral_media_uploads WHERE id IN (SELECT id FROM viral_media_uploads WHERE created_at < NOW() - INTERVAL '24 hours' LIMIT 30) RETURNING id,extension"
+    ).catch(()=>null);
+    for(const old of expired?.rows||[]){
+      if(validUploadId(old.id)&&(old.extension==="mp4"||old.extension==="webm"))
+        await Promise.allSettled([fs.unlink(pendingFileName(old.id,old.extension)),fs.unlink(pendingPosterName(old.id))]);
+    }
     const active=await database().query<{reserved:string}>(
       "SELECT COALESCE(SUM(size_bytes-received_bytes),0)::text AS reserved FROM viral_media_uploads WHERE created_at > NOW()-INTERVAL '24 hours'"
     );
