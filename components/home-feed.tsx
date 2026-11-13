@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -22,6 +22,10 @@ export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],tota
   const [category,setCategory]=useState(initialCategory);
   const [search,setSearch]=useState(initialSearch);
   const [sort,setSort]=useState(initialSort);
+  // Keep filters truthful when a visitor navigates Back/Forward between page URLs.
+  useEffect(()=>{setCategory(initialCategory);},[initialCategory]);
+  useEffect(()=>{setSearch(initialSearch);},[initialSearch]);
+  useEffect(()=>{setSort(initialSort);},[initialSort]);
   const lead=spotlight.find(item=>item.featured)||spotlight[0];
   const nextUp=spotlight.filter(item=>item.slug!==lead?.slug).slice(0,2);
   // Server-side filtering and 24-item pagination: no thousands of videos in browser memory.
