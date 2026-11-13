@@ -17,4 +17,5 @@ jobs:
       - run: npm run audit:colors
       - run: npm run typecheck
       - run: node scripts/check-viral-ux.mjs
+      - run: node scripts/check-auto-posters.mjs
       - run: npm run build
