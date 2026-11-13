@@ -4,6 +4,7 @@ import { z } from "zod";
 import { isAdmin } from "@/lib/auth";
 import { database } from "@/lib/db";
 import { slugify } from "@/lib/content";
+import { automaticThumbnailForVideo } from "@/lib/automatic-thumbnail";
 
 export const runtime = "nodejs";
 
@@ -31,12 +32,13 @@ export async function POST(req: NextRequest) {
   if (!data.success) return NextResponse.json({ error: "Check title, category and video URL." }, { status: 400 });
   const d = data.data;
   const slug = slugify(d.title) + "-" + randomBytes(4).toString("hex");
+  const posterUrl = d.posterUrl || await automaticThumbnailForVideo(d.videoUrl, slug);
   try {
     const result = await database().query(
       "INSERT INTO videos (slug, title, artist, description, category, video_url, poster_url, featured, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id, slug",
-      [slug, d.title, d.artist, d.description, d.category, d.videoUrl, d.posterUrl, d.featured, d.status]
+      [slug, d.title, d.artist, d.description, d.category, d.videoUrl, posterUrl, d.featured, d.status]
     );
-    return NextResponse.json({ ok: true, video: result.rows[0] }, { status: 201 });
+    return NextResponse.json({ ok: true, video: { ...result.rows[0], posterUrl, artwork: d.posterUrl ? "custom" : "automatic" } }, { status: 201 });
   } catch {
     return NextResponse.json({ error: "Could not create video. Check database setup." }, { status: 503 });
   }
