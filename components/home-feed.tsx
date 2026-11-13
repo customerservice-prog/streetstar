@@ -7,7 +7,7 @@ import {
   Flame, Headphones, Play, Search, SlidersHorizontal, Sparkles,
   Star, X, Zap
 } from "lucide-react";
-import { categories, type Story } from "@/lib/content";
+import { categories, categoryLabel, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
 import { PosterImage } from "@/components/poster-image";
 import { TrendingPreview } from "@/components/trending-preview";
@@ -64,16 +64,16 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
               </span>
               <span className="v3-lead-play" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
               <span className="v3-lead-copy">
-                <span className="v3-lead-category"><span>{lead.category.toUpperCase()}</span> / {lead.artist || "Bajo Mundo TV Viral"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
+                <span className="v3-lead-category"><span>{categoryLabel(lead.category)}</span> / {lead.artist || "Bajo Mundo TV Viral"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
                 <span className="v3-lead-title">{lead.title}</span>
                 <span className="v3-lead-link"><span><Play size={16} fill="currentColor" /></span> VER VIDEO DESTACADO <ArrowUpRight size={18}/></span>
               </span>
-              <span className="v3-lead-corner" aria-hidden="true">S / S</span>
+              <span className="v3-lead-corner" aria-hidden="true">B / M</span>
             </Link>
           ) : (
             <div className="v3-lead-empty">
-              <Star size={50} fill="currentColor" /><h1>THE NEXT STORY STARTS HERE.</h1>
-              <Link className="button button-accent" href="/submit">SUBMIT A VIDEO <ArrowUpRight size={17}/></Link>
+              <Star size={50} fill="currentColor" /><h1>THE PRÓXIMA HISTORIA.</h1>
+              <Link className="button button-accent" href="/submit">ENVIAR VIDEO <ArrowUpRight size={17}/></Link>
             </div>
           )}
           <aside className="v3-front-aside">
@@ -89,7 +89,7 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
                 <Link href={"/watch/" + item.slug} className="v3-next-item" key={item.slug}>
                   <span className="v3-next-thumb"><PosterImage src={item.posterUrl} alt="" /><span className="v3-next-play"><Play size={14} fill="currentColor" /></span></span>
                   <span className="v3-next-copy">
-                    <span className="v3-next-cat">{item.category.toUpperCase()} {item.isDemo && <span className="demo-pill">DEMO</span>}</span>
+                    <span className="v3-next-cat">{categoryLabel(item.category)} {item.isDemo && <span className="demo-pill">DEMO</span>}</span>
                     <strong>{item.title}</strong>
                     <span className="v3-next-watch">VER VIDEO <ArrowUpRight size={13}/></span>
                   </span>

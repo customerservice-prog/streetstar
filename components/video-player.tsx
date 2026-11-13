@@ -22,6 +22,10 @@ function embedUrl(url: string): string | null {
       const id = parsed.pathname.split("/").filter(Boolean)[0];
       return id && /^\d+$/.test(id) ? "https://player.vimeo.com/video/" + id : null;
     }
+    if (host === "share.descript.com") {
+      const match = parsed.pathname.match(/^\/view\/([A-Za-z0-9_-]+)\/?$/);
+      return match ? "https://share.descript.com/embed/" + match[1] : null;
+    }
     return null;
   } catch { return null; }
 }
@@ -81,7 +85,7 @@ export function VideoPlayer({ story }: { story: Story }) {
           <PosterImage src={story.posterUrl} alt="" />
           <span className="player-tint" />
           <span className="player-center"><Play size={34} fill="currentColor"/></span>
-          <span className="player-cover-label">CLICK TO WATCH</span>
+          <span className="player-cover-label">HAZ CLIC PARA VER</span>
         </button>
       ) : embed ? (
         <iframe src={embed + "?autoplay=1&rel=0"} title={story.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
