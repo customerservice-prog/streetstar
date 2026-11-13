@@ -25,6 +25,8 @@ CREATE TABLE IF NOT EXISTS submissions (
 );
 
 CREATE INDEX IF NOT EXISTS videos_status_created_at_idx ON videos (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS videos_status_category_created_at_idx ON videos(status,category,created_at DESC);
+CREATE INDEX IF NOT EXISTS videos_status_title_idx ON videos(status,title);
 CREATE INDEX IF NOT EXISTS submissions_status_created_at_idx ON submissions (status, created_at DESC);
 CREATE INDEX IF NOT EXISTS submissions_email_created_at_idx ON submissions (email, created_at DESC);
 
