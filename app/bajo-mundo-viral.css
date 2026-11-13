@@ -1,0 +1,19 @@
+/* Bajo Mundo TV Viral — independent StreetStar service identity layer.
+   Only styles the viral site; does not modify bajomundotv.com. */
+:root{--bg:#0b0c0f;--panel:#18191e;--panel2:#212026;--text:#f7f7f8;--muted:#c5bdbe;--line:#534047;--accent:#fa6135;--lavender:#ffb26a;--v3-ink:#190b06}
+body{background:radial-gradient(ellipse 700px 400px at 87% 15%,#fa613510,transparent 70%),#0b0c0f}
+.announcement-premium,.bajo-announcement{background:#fa6135;color:#1b0805}
+.site-header-premium{background:#101014f5;border-color:#fa613540}
+.bajo-brand{display:flex!important;align-items:center!important;gap:9px!important;white-space:nowrap}
+.bajo-official-logo{width:78px!important;height:70px!important;object-fit:contain;flex:none;filter:drop-shadow(0 3px 6px #0009)}
+.bajo-brand-words{display:flex;flex-direction:column;color:#f5f5f5;font:900 21px/1 "Barlow Condensed",Impact,sans-serif;letter-spacing:.01em}
+.bajo-brand-words strong{display:inline;color:#fa6135}
+.bajo-brand-words small{font:900 10px/1.1 "DM Sans",sans-serif;color:#ffb26a;letter-spacing:.23em;margin-top:7px}
+.bajo-brand:hover .bajo-brand-words{color:#fff}
+.v3-lead-story{border-color:#fa61354b}
+.v3-front-identity{background:radial-gradient(circle at 95% 20%,#fa613530,transparent 45%),linear-gradient(135deg,#332223,#14191c 78%);border-color:#fba25b70}
+.v3-ribbon,.v3-creator{background:linear-gradient(112deg,#281a1a,#191b1f 60%,#302321)}
+.v3-lead-story:hover .v3-lead-play{box-shadow:0 0 0 11px #fa613524,0 0 36px #fa613580}
+.site-footer{border-color:#fa613540}
+@media(max-width:1180px){.bajo-brand-words{font-size:18px}.bajo-official-logo{width:62px!important;height:59px!important}}
+@media(max-width:620px){.bajo-brand-words{font-size:17px}.bajo-official-logo{width:56px!important;height:56px!important}.site-header .header-row{gap:7px}.bajo-announcement .announcement-center{display:none}}

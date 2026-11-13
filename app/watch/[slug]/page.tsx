@@ -32,12 +32,12 @@ export default async function WatchPage({ params }: Props) {
       <div className="watch-breadcrumb"><Link href="/"><ArrowLeft size={16}/> BACK TO FEED</Link><span>/</span><span>{story.category.toUpperCase()}</span></div>
       <div className="watch-grid">
         <article className="watch-main">
-          <div className="watch-label"><Star fill="currentColor" size={14}/> STREETSTAR EXCLUSIVE FEED {story.isDemo && <span className="demo-pill">DEMO</span>}</div>
+          <div className="watch-label"><Star fill="currentColor" size={14}/> BAJO MUNDO TV EXCLUSIVE FEED {story.isDemo && <span className="demo-pill">DEMO</span>}</div>
           <h1>{story.title}</h1>
-          <div className="watch-meta"><span>{story.artist || "StreetStar"}</span><span>•</span><span><CalendarDays size={14}/> {storyDate(story.createdAt)}</span><span>•</span><span>{story.category}</span></div>
+          <div className="watch-meta"><span>{story.artist || "Bajo Mundo TV Viral"}</span><span>•</span><span><CalendarDays size={14}/> {storyDate(story.createdAt)}</span><span>•</span><span>{story.category}</span></div>
           <VideoPlayer story={story}/>
           <div className="watch-actions"><span>THE STORY.</span><ShareButton/><VideoSave slug={story.slug}/><a href="#comments" className="watch-share"><MessageSquare size={16}/> COMMENTS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">ORIGINAL SOURCE <ExternalLink size={15}/></a></div>
-          <p className="watch-description">{story.description || "An original StreetStar feature."}</p>
+          <p className="watch-description">{story.description || "An original Bajo Mundo TV Viral feature."}</p>
           {story.isDemo && <p className="demo-notice">This is demonstration content. The image and sample player are illustrative and do not represent a real news story or music release.</p>}
           <VideoCommunity slug={story.slug} />
           <div className="watch-more-copy"><span>MORE THAN A MOMENT.</span><strong>BE PART OF THE CULTURE.</strong><Link href="/submit">SUBMIT YOUR VIDEO <ArrowUpRight size={16}/></Link></div>

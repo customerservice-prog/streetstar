@@ -47,10 +47,10 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
 
   return (
     <main className="streetstar-home streetstar-v3">
-      <section className="v3-front container" id="spotlight" aria-label="StreetStar front page">
+      <section className="v3-front container" id="spotlight" aria-label="Bajo Mundo TV Viral front page">
         <div className="v3-masthead">
-          <span className="v3-masthead-left"><span className="v3-live-dot" /> THE FRONT PAGE <span className="v3-masthead-slash">/</span> THE CULTURE IN MOTION</span>
-          <span className="v3-masthead-right">INDEPENDENT VOICES. BIG MOMENTS. <Star size={13} fill="currentColor" /></span>
+          <span className="v3-masthead-left"><span className="v3-live-dot" /> PORTADA VIRAL <span className="v3-masthead-slash">/</span> LA CULTURA EN MOVIMIENTO</span>
+          <span className="v3-masthead-right">VIDEOS QUE DAN DE QUÉ HABLAR. <Star size={13} fill="currentColor" /></span>
         </div>
         <div className="v3-front-grid">
           {lead ? (
@@ -59,14 +59,14 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
               <span className="v3-lead-shade" />
               <span className="v3-lead-grain" aria-hidden="true"/>
               <span className="v3-lead-top">
-                <span className="v3-featured-pill"><Star size={14} fill="currentColor" /> COVER STORY</span>
-                <span className="v3-featured-issue">STREETSTAR / 001</span>
+                <span className="v3-featured-pill"><Star size={14} fill="currentColor" /> VIDEO DESTACADO</span>
+                <span className="v3-featured-issue">BAJO MUNDO TV / 001</span>
               </span>
               <span className="v3-lead-play" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
               <span className="v3-lead-copy">
-                <span className="v3-lead-category"><span>{lead.category.toUpperCase()}</span> / {lead.artist || "StreetStar"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
+                <span className="v3-lead-category"><span>{lead.category.toUpperCase()}</span> / {lead.artist || "Bajo Mundo TV Viral"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
                 <span className="v3-lead-title">{lead.title}</span>
-                <span className="v3-lead-link"><span><Play size={16} fill="currentColor" /></span> WATCH FEATURED VIDEO <ArrowUpRight size={18}/></span>
+                <span className="v3-lead-link"><span><Play size={16} fill="currentColor" /></span> VER VIDEO DESTACADO <ArrowUpRight size={18}/></span>
               </span>
               <span className="v3-lead-corner" aria-hidden="true">S / S</span>
             </Link>
@@ -78,40 +78,40 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
           )}
           <aside className="v3-front-aside">
             <div className="v3-front-identity">
-              <div className="v3-front-identity-top"><span>STREETSTAR</span><span>EST. 2026 <Zap size={13} fill="currentColor"/></span></div>
-              <h2>MORE THAN<br/><em>A MOMENT.</em><br/>IT&apos;S CULTURE<span>.</span></h2>
-              <p>New sounds, bold stories, and the moments that move us.</p>
-              <div className="v3-front-identity-bottom"><span>THE WORLD IS WATCHING</span><Star size={24} fill="currentColor" /></div>
+              <div className="v3-front-identity-top"><span>BAJO MUNDO TV</span><span>EST. 2026 <Zap size={13} fill="currentColor"/></span></div>
+              <h2>LA CALLE<br/><em>HABLA.</em><br/>EL MUNDO LO VE<span>.</span></h2>
+              <p>Videos virales, entrevistas y cultura urbana. La calle tiene su canal.</p>
+              <div className="v3-front-identity-bottom"><span>EL MUNDO ESTÁ MIRANDO</span><Star size={24} fill="currentColor" /></div>
             </div>
             <div className="v3-up-next">
-              <div className="v3-up-next-heading"><span><Flame size={15}/> ON OUR RADAR</span><span>{String(nextUp.length).padStart(2, "0")} PICKS</span></div>
+              <div className="v3-up-next-heading"><span><Flame size={15}/> EN LA MIRA</span><span>{String(nextUp.length).padStart(2, "0")} PICKS</span></div>
               {nextUp.map((item, index) => (
                 <Link href={"/watch/" + item.slug} className="v3-next-item" key={item.slug}>
                   <span className="v3-next-thumb"><PosterImage src={item.posterUrl} alt="" /><span className="v3-next-play"><Play size={14} fill="currentColor" /></span></span>
                   <span className="v3-next-copy">
                     <span className="v3-next-cat">{item.category.toUpperCase()} {item.isDemo && <span className="demo-pill">DEMO</span>}</span>
                     <strong>{item.title}</strong>
-                    <span className="v3-next-watch">WATCH STORY <ArrowUpRight size={13}/></span>
+                    <span className="v3-next-watch">VER VIDEO <ArrowUpRight size={13}/></span>
                   </span>
                   <span className="v3-next-rank">0{index + 1}</span>
                 </Link>
               ))}
-              <Link className="v3-next-discover" href="#discover">EXPLORE THE FULL FEED <ArrowRight size={15}/></Link>
+              <Link className="v3-next-discover" href="#discover">VER TODOS LOS VIDEOS <ArrowRight size={15}/></Link>
             </div>
           </aside>
         </div>
         <div className="v3-front-bottom">
-          <span>BUILT FOR THE UNEXPECTED. CURATED FOR THE CULTURE.</span>
-          <a href="#discover">SCROLL TO DISCOVER <ArrowDown size={17}/></a>
+          <span>BAJO MUNDO TV · VIRAL · LA CALLE TIENE SU CANAL.</span>
+          <a href="#discover">EXPLORAR VIDEOS <ArrowDown size={17}/></a>
         </div>
       </section>
 
-      <div className="v3-ribbon" aria-label="StreetStar topics">
+      <div className="v3-ribbon" aria-label="Bajo Mundo TV Viral topics">
         <div className="v3-ribbon-track" aria-hidden="true">
           {Array.from({length:2},(_,i)=><div className="v3-ribbon-sequence" key={i}>
-            <span>MUSIC</span><Star size={13} fill="currentColor"/><span>VIRAL</span><Star size={13} fill="currentColor"/>
-            <span>CULTURE</span><Star size={13} fill="currentColor"/><span>REAL STORIES</span><Star size={13} fill="currentColor"/>
-            <span>STREETSTAR</span><Star size={13} fill="currentColor"/>
+            <span>FARÁNDULA</span><Star size={13} fill="currentColor"/><span>VIRAL</span><Star size={13} fill="currentColor"/>
+            <span>CULTURA</span><Star size={13} fill="currentColor"/><span>HISTORIAS</span><Star size={13} fill="currentColor"/>
+            <span>BAJO MUNDO TV</span><Star size={13} fill="currentColor"/>
           </div>)}
         </div>
       </div>
@@ -119,11 +119,11 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
       <TrendingPreview stories={stories} trending={trending}/>
       <section className="container v3-discover" id="discover">
         <div className="v3-section-head">
-          <div><div className="v3-eyebrow"><span className="v3-eyebrow-line"/> THE LATEST / THE UNMISSABLE</div><h2>THE <span>DROP.</span></h2><p>The new voices, the headlines, and everything making noise right now.</p></div>
-          <div className="v3-section-stamp" aria-hidden="true"><Star size={31} fill="currentColor"/><span>STREETSTAR<br/>ORIGINAL FEED</span></div>
+          <div><div className="v3-eyebrow"><span className="v3-eyebrow-line"/> LOS ÚLTIMOS / LOS VIRALES</div><h2>LO <span>VIRAL.</span></h2><p>Los momentos, entrevistas y temas de los que todos están hablando.</p></div>
+          <div className="v3-section-stamp" aria-hidden="true"><Star size={31} fill="currentColor"/><span>BAJO MUNDO TV<br/>ORIGINAL FEED</span></div>
         </div>
         <div className="v3-filter-bar">
-          <div className="v3-filter-label"><Sparkles size={15}/> EXPLORE BY CATEGORY</div>
+          <div className="v3-filter-label"><Sparkles size={15}/> EXPLORAR CATEGORÍAS</div>
           <div className="categories" aria-label="Filter videos by category">
             {categories.map(item =>
               <button type="button" key={item} className={"filter-chip " + (category === item ? "selected" : "")}
@@ -133,30 +133,30 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
             )}
           </div>
           <div className="search-sort">
-            <label className="feed-search"><Search size={18}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search videos or artists" aria-label="Search videos or artists" />{search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search"><X size={16}/></button>}</label>
+            <label className="feed-search"><Search size={18}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar videos o artistas" aria-label="Buscar videos o artistas" />{search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search"><X size={16}/></button>}</label>
             <label className="sort-control"><SlidersHorizontal size={17}/><select aria-label="Sort videos" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest</option><option value="az">A–Z</option></select></label>
           </div>
         </div>
 
-        <div className="v3-feed-head" id="latest"><span><Clapperboard size={18}/> LATEST DROPS</span><span>{filtered.length} {filtered.length === 1 ? "VIDEO" : "VIDEOS"}</span></div>
+        <div className="v3-feed-head" id="latest"><span><Clapperboard size={18}/> ÚLTIMOS VIDEOS</span><span>{filtered.length} {filtered.length === 1 ? "VIDEO" : "VIDEOS"}</span></div>
         {filtered.length ?
           <div className="video-grid v3-video-grid">
             {filtered.map((story, index) => <VideoCard story={story} key={story.slug} index={index}/>)}
           </div>
-          : <div className="no-results"><Search size={37}/><h3>NO STORIES FOUND</h3><p>Try another category or search term.</p><button className="button button-outline" onClick={() => { setSearch(""); setCategory("All"); }}>RESET FILTERS</button></div>}
+          : <div className="no-results"><Search size={37}/><h3>NO ENCONTRAMOS VIDEOS</h3><p>Prueba otra categoría o búsqueda.</p><button className="button button-outline" onClick={() => { setSearch(""); setCategory("All"); }}>LIMPIAR FILTROS</button></div>}
       </section>
 
       <section className="container v3-creator">
-        <div className="v3-creator-back" aria-hidden="true"><span>YOUR STORY</span><span>YOUR STAGE</span></div>
-        <div className="v3-creator-copy"><span className="v3-eyebrow"><span className="v3-eyebrow-line"/> FOR THE PEOPLE MAKING CULTURE</span>
-          <h2>GOT<br/>SOMETHING<br/><em>REAL?</em></h2>
-          <p>Make some noise. Send your video to the StreetStar editorial team for review.</p>
-          <Link href="/submit" className="v3-creator-cta">SUBMIT YOUR VIDEO <ArrowUpRight size={18}/></Link>
+        <div className="v3-creator-back" aria-hidden="true"><span>TU HISTORIA</span><span>TU ESCENARIO</span></div>
+        <div className="v3-creator-copy"><span className="v3-eyebrow"><span className="v3-eyebrow-line"/> LOS VIDEOS DE NUESTRA GENTE</span>
+          <h2>¿TIENES<br/>ALGO<br/><em>VIRAL?</em></h2>
+          <p>Make some noise. Envía tu video a Bajo Mundo TV para revisión editorial.</p>
+          <Link href="/submit" className="v3-creator-cta">ENVIAR TU VIDEO <ArrowUpRight size={18}/></Link>
         </div>
-        <div className="v3-creator-badge" aria-hidden="true"><Star size={80} fill="currentColor"/><span>STREETSTAR</span></div>
+        <div className="v3-creator-badge" aria-hidden="true"><Star size={80} fill="currentColor"/><span>BAJO MUNDO TV</span></div>
       </section>
 
-      <div className="container v3-endline"><span><Star size={14} fill="currentColor"/> THE CULTURE DOESN&apos;T WAIT.</span><Link href="#spotlight">BACK TO TOP <ArrowUpRight size={16}/></Link></div>
+      <div className="container v3-endline"><span><Star size={14} fill="currentColor"/> LA CALLE TIENE SU CANAL.</span><Link href="#spotlight">VOLVER ARRIBA <ArrowUpRight size={16}/></Link></div>
     </main>
   );
 }

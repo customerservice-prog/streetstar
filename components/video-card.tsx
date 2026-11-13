@@ -14,7 +14,7 @@ export function VideoCard({ story, index = 0, compact = false }: { story: Story;
         {!compact && <span className="card-cover-action" aria-hidden="true">WATCH NOW <ArrowUpRight size={16} /></span>}
       </div>
       <div className="card-copy">
-        <div className="card-meta"><span>{story.artist || "StreetStar"}</span><span className="meta-bullet">✳</span><span>{storyDate(story.createdAt)}</span>{story.isDemo && <span className="demo-pill">DEMO</span>}</div>
+        <div className="card-meta"><span>{story.artist || "Bajo Mundo TV Viral"}</span><span className="meta-bullet">✳</span><span>{storyDate(story.createdAt)}</span>{story.isDemo && <span className="demo-pill">DEMO</span>}</div>
         <h3>{story.title}</h3>
         <div className="card-bottom"><span className="card-watch">WATCH VIDEO <ArrowUpRight size={15} /></span>{!compact && <span className="card-bottom-mark"><Star size={14} fill="currentColor" /></span>}</div>
       </div>

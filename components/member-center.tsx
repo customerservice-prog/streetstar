@@ -135,8 +135,8 @@ export function MemberCenter(){
   }
 
   return <main className="container member-page">
-    <div className="member-page-hero"><p className="community-eyebrow"><Star size={15} fill="currentColor"/> THE STREETSTAR COMMUNITY</p>
-      <h1>YOUR <span>STREETSTAR.</span></h1>
+    <div className="member-page-hero"><p className="community-eyebrow"><Star size={15} fill="currentColor"/> THE BAJO MUNDO TV COMMUNITY</p>
+      <h1>YOUR <span>BAJO MUNDO TV.</span></h1>
       <p>Save what moves you. Join the conversation. Be part of the culture.</p>
     </div>
     {error&&<p className="discussion-alert error" role="alert">{error}</p>}
@@ -144,7 +144,7 @@ export function MemberCenter(){
     {loading?<div className="member-loading">LOADING YOUR SPACE...</div>
       :!member?<div className="member-auth-layout">
         <section className="member-auth-card">
-          <div className="member-auth-switch"><button className={mode==="register"?"active":""} onClick={()=>setMode("register")}><UserPlus size={15}/> JOIN STREETSTAR</button><button className={mode==="login"?"active":""} onClick={()=>setMode("login")}><LogIn size={15}/> SIGN IN</button></div>
+          <div className="member-auth-switch"><button className={mode==="register"?"active":""} onClick={()=>setMode("register")}><UserPlus size={15}/> JOIN BAJO MUNDO TV</button><button className={mode==="login"?"active":""} onClick={()=>setMode("login")}><LogIn size={15}/> SIGN IN</button></div>
           <h2>{mode==="register"?"CREATE YOUR ACCOUNT.":"WELCOME BACK."}</h2>
           <p>{mode==="register"?"Your personal library and in-app notifications start here.":"Get back to your favorite videos and conversations."}</p>
           <form onSubmit={signin} className="member-form">
@@ -154,7 +154,7 @@ export function MemberCenter(){
             <button type="submit" disabled={busy} className="button button-accent">{busy?"WORKING...":mode==="register"?"CREATE MY ACCOUNT":"SIGN IN"}<ArrowUpRight size={17}/></button>
           </form>
           {mode==="login"&&emailEnabled&&<p className="member-help-link"><Link href="/account/security?mode=reset">Forgot your password? <ArrowRight size={14}/></Link></p>}
-          <p className="member-fineprint">{emailEnabled?"Account verification and recovery links are sent to your registered email.":"Email verification and password recovery are currently unavailable until StreetStar connects its own verified email sender."} Use a strong, unique password. By joining, you agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.</p>
+          <p className="member-fineprint">{emailEnabled?"Account verification and recovery links are sent to your registered email.":"Email verification and password recovery are currently unavailable until Bajo Mundo TV Viral connects its own verified email sender."} Use a strong, unique password. By joining, you agree to the <Link href="/terms">Terms</Link> and <Link href="/privacy">Privacy Policy</Link>.</p>
         </section>
         <aside className="member-auth-promo"><div className="member-auth-promo-star"><Star size={55} fill="currentColor"/></div><span>MORE THAN A PROFILE.</span><h2>YOUR CULTURE.<br/><em>YOUR SPACE.</em></h2><div><p><Bookmark size={17}/> SAVE YOUR FAVORITES</p><p><Clock3 size={17}/> YOUR WATCH HISTORY</p><p><Bell size={17}/> REPLY ALERTS</p><p><MessageCircle size={17}/> JOIN THE DISCUSSION</p></div></aside>
       </div>

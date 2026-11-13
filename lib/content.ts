@@ -21,7 +21,7 @@ export const demoStories: Story[] = [
   {
     slug: "after-hours-the-city-never-stops",
     title: "AFTER HOURS: THE CITY NEVER STOPS",
-    artist: "StreetStar Originals",
+    artist: "Bajo Mundo TV Viral Originals",
     description: "A fictional editorial preview exploring the energy of nightlife, creativity, and the streets. This is a demonstration post, not news coverage.",
     category: "Culture",
     videoUrl: demoVideo,
@@ -33,7 +33,7 @@ export const demoStories: Story[] = [
   {
     slug: "next-wave-underground-sounds",
     title: "NEXT WAVE: UNDERGROUND SOUNDS",
-    artist: "StreetStar Sessions",
+    artist: "Bajo Mundo TV Viral Sessions",
     description: "Concept card for new music discovery. Replace with an authorized artist upload.",
     category: "Music",
     videoUrl: demoVideo,
@@ -45,7 +45,7 @@ export const demoStories: Story[] = [
   {
     slug: "courtside-energy",
     title: "COURTSIDE ENERGY: MORE THAN THE GAME",
-    artist: "StreetStar Sports",
+    artist: "Bajo Mundo TV Viral Sports",
     description: "Sample sports culture feature. No real event is depicted or reported.",
     category: "Sports",
     videoUrl: demoVideo,
@@ -57,7 +57,7 @@ export const demoStories: Story[] = [
   {
     slug: "the-voices-building-tomorrow",
     title: "THE VOICES BUILDING TOMORROW",
-    artist: "StreetStar Conversations",
+    artist: "Bajo Mundo TV Viral Conversations",
     description: "Placeholder for long-form interviews and emerging creators.",
     category: "Interviews",
     videoUrl: demoVideo,
@@ -69,7 +69,7 @@ export const demoStories: Story[] = [
   {
     slug: "the-moment-everyone-talks-about",
     title: "THE MOMENT EVERYONE TALKS ABOUT",
-    artist: "StreetStar Viral",
+    artist: "Bajo Mundo TV Viral Viral",
     description: "Placeholder for licensed, verified viral footage.",
     category: "Viral",
     videoUrl: demoVideo,
@@ -81,7 +81,7 @@ export const demoStories: Story[] = [
   {
     slug: "style-from-the-block",
     title: "STYLE FROM THE BLOCK",
-    artist: "StreetStar Style",
+    artist: "Bajo Mundo TV Viral Style",
     description: "Concept article for streetwear and city lifestyle coverage.",
     category: "Lifestyle",
     videoUrl: demoVideo,
@@ -93,7 +93,7 @@ export const demoStories: Story[] = [
   {
     slug: "behind-the-beat",
     title: "BEHIND THE BEAT: WHERE IDEAS BEGIN",
-    artist: "StreetStar Sessions",
+    artist: "Bajo Mundo TV Viral Sessions",
     description: "Concept for behind-the-scenes studio footage.",
     category: "Music",
     videoUrl: demoVideo,
@@ -105,7 +105,7 @@ export const demoStories: Story[] = [
   {
     slug: "the-night-shift",
     title: "THE NIGHT SHIFT: CITY STORIES",
-    artist: "StreetStar Originals",
+    artist: "Bajo Mundo TV Viral Originals",
     description: "Placeholder for cultural storytelling and community features.",
     category: "Culture",
     videoUrl: demoVideo,

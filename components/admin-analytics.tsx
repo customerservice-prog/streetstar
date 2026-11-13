@@ -25,7 +25,7 @@ export function AdminAnalytics(){
   const peak=useMemo(()=>Math.max(1,...(data?.days||[]).map(d=>d.plays)),[data?.days]);
   return <main className="container analytics-page">
     <div className="analytics-back"><Link href="/admin"><ArrowLeft size={16}/> BACK TO CONTROL ROOM</Link><span>PRIVATE ANALYTICS</span></div>
-    <div className="analytics-heading"><div><p className="community-eyebrow"><Activity size={16}/> AUDIENCE INTELLIGENCE</p><h1>STREETSTAR <span>DATA.</span></h1><p>Actual recorded activity, not fictional view counters. Play starts and native playback duration are separate metrics.</p></div><button className="button button-outline" onClick={()=>void refresh()} disabled={loading}><RefreshCw size={16}/> REFRESH</button></div>
+    <div className="analytics-heading"><div><p className="community-eyebrow"><Activity size={16}/> AUDIENCE INTELLIGENCE</p><h1>BAJO MUNDO TV <span>DATA.</span></h1><p>Actual recorded activity, not fictional view counters. Play starts and native playback duration are separate metrics.</p></div><button className="button button-outline" onClick={()=>void refresh()} disabled={loading}><RefreshCw size={16}/> REFRESH</button></div>
     {error&&<p role="alert" className="discussion-alert error">{error}</p>}
     {loading?<p className="discussion-loading">Loading analytics…</p>
       :data&&<>

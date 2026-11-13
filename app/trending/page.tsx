@@ -5,7 +5,7 @@ import { getStories } from "@/lib/db";
 import { getTrending } from "@/lib/trending";
 import { VideoCard } from "@/components/video-card";
 
-export const metadata:Metadata={title:"Trending videos",description:"Real play starts and community activity from the last seven days on StreetStar."};
+export const metadata:Metadata={title:"Trending videos",description:"Real play starts and community activity from the last seven days on Bajo Mundo TV Viral."};
 export const dynamic="force-dynamic";
 
 export default async function TrendingPage(){
