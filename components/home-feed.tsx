@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   ArrowDown, ArrowRight, ArrowUpRight, Check, Clapperboard,
@@ -13,37 +14,35 @@ import { PosterImage } from "@/components/poster-image";
 import { TrendingPreview } from "@/components/trending-preview";
 import type { TrendingRow } from "@/lib/trending";
 
-export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:TrendingRow[] }) {
-  const [category, setCategory] = useState("All");
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("newest");
-
-  const lead = stories.find(item => item.featured) || stories[0];
-  const nextUp = stories.filter(item => item.slug !== lead?.slug).slice(0, 2);
-  const promotedSlugs = useMemo(() =>
-    new Set([lead?.slug, ...nextUp.map(item => item.slug)].filter(Boolean)),
-    [lead?.slug, nextUp.map(item => item.slug).join("|")]
-  );
-
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    // On the default feed, avoid showing the three prominently featured items again.
-    // With fewer than 7 stories, or on an explicit search/filter, show the full library.
-    const library = category === "All" && !q && stories.length >= 7
-      ? stories.filter(item => !promotedSlugs.has(item.slug))
-      : stories;
-
-    return library
-      .filter(item => (category === "All" || item.category === category) &&
-        (!q || (item.title + " " + item.artist + " " + item.category + " " + item.description).toLowerCase().includes(q)))
-      .sort((a, b) =>
-        sort === "az" ? a.title.localeCompare(b.title) : Date.parse(b.createdAt) - Date.parse(a.createdAt));
-  }, [stories, category, search, sort, promotedSlugs]);
-
-  const applyCategory = (next: string) => {
-    setCategory(next);
-    document.getElementById("discover")?.scrollIntoView({ behavior: "smooth" });
+export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],total,page,pageCount,initialCategory,initialSearch,initialSort }: {
+  stories:Story[];spotlight:Story[];trending?:TrendingRow[];trendingStories?:Story[];
+  total:number;page:number;pageCount:number;initialCategory:string;initialSearch:string;initialSort:"newest"|"az";
+}) {
+  const router=useRouter();
+  const [category,setCategory]=useState(initialCategory);
+  const [search,setSearch]=useState(initialSearch);
+  const [sort,setSort]=useState(initialSort);
+  // Keep filters truthful when a visitor navigates Back/Forward between page URLs.
+  useEffect(()=>{setCategory(initialCategory);},[initialCategory]);
+  useEffect(()=>{setSearch(initialSearch);},[initialSearch]);
+  useEffect(()=>{setSort(initialSort);},[initialSort]);
+  const lead=spotlight.find(item=>item.featured)||spotlight[0];
+  const nextUp=spotlight.filter(item=>item.slug!==lead?.slug).slice(0,2);
+  // Server-side filtering and 24-item pagination: no thousands of videos in browser memory.
+  const filtered=stories;
+  const pageUrl=(pageNumber:number,categoryValue=category,searchValue=search,sortValue=sort)=>{
+    const params=new URLSearchParams();
+    if(categoryValue!=="All")params.set("category",categoryValue);
+    if(searchValue.trim())params.set("q",searchValue.trim().slice(0,100));
+    if(sortValue!=="newest")params.set("sort",sortValue);
+    if(pageNumber>1)params.set("page",String(pageNumber));
+    const query=params.toString();
+    return "/" + (query?"?"+query:"") + "#discover";
   };
+  const applyCategory=(next:string)=>{setCategory(next);router.push(pageUrl(1,next));};
+  const submitSearch=()=>router.push(pageUrl(1,category,search));
+  const firstPage=Math.max(1,Math.min(pageCount-4,page-2));
+  const pageNumbers=Array.from({length:Math.min(pageCount,5)},(_,i)=>firstPage+i);
 
   return (
     <main className="streetstar-home streetstar-v3">
@@ -116,7 +115,7 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
         </div>
       </div>
 
-      <TrendingPreview stories={stories} trending={trending}/>
+      <TrendingPreview stories={trendingStories.length ? trendingStories : spotlight} trending={trending}/>
       <section className="container v3-discover" id="discover">
         <div className="v3-section-head">
           <div><div className="v3-eyebrow"><span className="v3-eyebrow-line"/> LOS ÚLTIMOS / LOS VIRALES</div><h2>LO <span>VIRAL.</span></h2><p>Los momentos, entrevistas y temas de los que todos están hablando.</p></div>
@@ -133,17 +132,28 @@ export function HomeFeed({ stories,trending=[] }: { stories: Story[];trending?:T
             )}
           </div>
           <div className="search-sort">
-            <label className="feed-search"><Search size={18}/><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar videos o artistas" aria-label="Buscar videos o artistas" />{search && <button type="button" onClick={() => setSearch("")} aria-label="Clear search"><X size={16}/></button>}</label>
-            <label className="sort-control"><SlidersHorizontal size={17}/><select aria-label="Sort videos" value={sort} onChange={e => setSort(e.target.value)}><option value="newest">Newest</option><option value="az">A–Z</option></select></label>
+            <form className="viral-search-form" role="search" onSubmit={e=>{e.preventDefault();submitSearch();}}>
+              <label className="feed-search"><Search size={18}/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar videos o artistas" maxLength={100} aria-label="Buscar videos o artistas"/>{search && <button type="button" onClick={()=>{setSearch("");router.push(pageUrl(1,category,""));}} aria-label="Limpiar búsqueda"><X size={16}/></button>}</label>
+              <button className="viral-search-submit" type="submit">BUSCAR</button>
+            </form>
+            <label className="sort-control"><SlidersHorizontal size={17}/><select aria-label="Ordenar videos" value={sort} onChange={e=>{const next=e.target.value as "newest"|"az";setSort(next);router.push(pageUrl(1,category,search,next));}}><option value="newest">Más recientes</option><option value="az">A–Z</option></select></label>
           </div>
         </div>
 
-        <div className="v3-feed-head" id="latest"><span><Clapperboard size={18}/> ÚLTIMOS VIDEOS</span><span>{filtered.length} {filtered.length === 1 ? "VIDEO" : "VIDEOS"}</span></div>
+        <div className="v3-feed-head" id="latest"><span><Clapperboard size={18}/> ÚLTIMOS VIDEOS</span><span>{total.toLocaleString("es-DO")} {total === 1 ? "VIDEO" : "VIDEOS"} · PÁGINA {page} DE {pageCount}</span></div>
         {filtered.length ?
           <div className="video-grid v3-video-grid">
-            {filtered.map((story, index) => <VideoCard story={story} key={story.slug} index={index}/>)}
+            {filtered.map((story, index) => <VideoCard story={story} key={story.slug} index={(page-1)*24+index}/>)}
           </div>
-          : <div className="no-results"><Search size={37}/><h3>NO ENCONTRAMOS VIDEOS</h3><p>Prueba otra categoría o búsqueda.</p><button className="button button-outline" onClick={() => { setSearch(""); setCategory("All"); }}>LIMPIAR FILTROS</button></div>}
+          : <div className="no-results"><Search size={37}/><h3>NO ENCONTRAMOS VIDEOS</h3><p>Prueba otra categoría o búsqueda.</p><button className="button button-outline" onClick={() => {setSearch("");setCategory("All");setSort("newest");router.push("/#discover");}}>LIMPIAR FILTROS</button></div>}
+        {pageCount>1 && <nav className="viral-pagination" aria-label="Páginas de videos">
+          {page>1 ? <Link href={pageUrl(page-1)}>← ANTERIOR</Link> : <span className="is-disabled">← ANTERIOR</span>}
+          {firstPage>1 && <span aria-hidden="true">…</span>}
+          {pageNumbers.map(n=><Link key={n} href={pageUrl(n)} aria-current={n===page?"page":undefined} className={n===page?"is-current":""}>{n}</Link>)}
+          {pageNumbers[pageNumbers.length-1]<pageCount && <span aria-hidden="true">…</span>}
+          {page<pageCount ? <Link href={pageUrl(page+1)}>SIGUIENTE →</Link> : <span className="is-disabled">SIGUIENTE →</span>}
+        </nav>}
+        {pageCount>1 && <p className="viral-pagination-note">24 videos por página · Búsqueda en toda la biblioteca</p>}
       </section>
 
       <section className="container v3-creator">
