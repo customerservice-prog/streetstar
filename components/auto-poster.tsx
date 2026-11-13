@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { PosterImage } from "@/components/poster-image";
 
 /**
@@ -17,9 +18,14 @@ export function AutoPoster({
   variant?:"feature"|"card"|"mini";
   loading?:"lazy"|"eager";
 }) {
-  return <span className={"auto-poster auto-poster--"+variant} aria-hidden="true">
+  const [wide,setWide]=useState(false);
+  useEffect(()=>setWide(false),[src]);
+  return <span className={"auto-poster auto-poster--"+variant+(wide?" auto-poster--wide":"")} aria-hidden="true">
     <span className="auto-poster-halo"><PosterImage src={src} alt="" loading={loading}/></span>
-    <PosterImage src={src} alt="" loading={loading}/>
+    <PosterImage src={src} alt="" loading={loading} onLoad={event=>{
+      const image=event.currentTarget;
+      setWide(image.naturalWidth>0 && image.naturalHeight>0 && image.naturalWidth/image.naturalHeight>=1.3);
+    }}/>
     <span className="auto-poster-frame"/>
   </span>;
 }
