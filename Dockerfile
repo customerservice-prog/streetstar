@@ -6,7 +6,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY package*.json ./
 RUN npm install --no-audit --no-fund
 COPY . .
-RUN npm run audit:colors && npm run typecheck && node scripts/check-auto-posters.mjs && npm run build
+RUN npm run audit:colors && npm run typecheck && node scripts/check-auto-posters.mjs && node scripts/check-admin-upload.mjs && npm run build
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
