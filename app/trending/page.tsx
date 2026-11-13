@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, Flame, Star, TrendingUp } from "lucide-react";
-import { getStories } from "@/lib/db";
+import { getStoriesBySlugs } from "@/lib/db";
 import { getTrending } from "@/lib/trending";
 import { VideoCard } from "@/components/video-card";
 
@@ -9,7 +9,8 @@ export const metadata:Metadata={title:"Trending videos",description:"Real play s
 export const dynamic="force-dynamic";
 
 export default async function TrendingPage(){
-  const [rows,stories]=await Promise.all([getTrending(),getStories()]);
+  const rows=await getTrending();
+  const stories=await getStoriesBySlugs(rows.map(row=>row.slug));
   const bySlug=new Map(stories.map(s=>[s.slug,s]));
   const ranked=rows.map(r=>({metrics:r,story:bySlug.get(r.slug)})).filter(x=>Boolean(x.story));
   return <main className="container trending-page"><div className="trending-hero"><p className="community-eyebrow"><Flame size={16}/> THE COMMUNITY DECIDES</p><h1>TRENDING <span>NOW.</span></h1><p>A real-time ranking based on unique daily play starts, approved comments and reactions over the past seven days. No paid placement or fabricated counters.</p></div>
