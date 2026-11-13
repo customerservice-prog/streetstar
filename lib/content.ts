@@ -7,6 +7,7 @@ export type Story = {
   videoUrl: string;
   posterUrl: string;
   featured: boolean;
+  plays?: number;
   createdAt: string;
   isDemo?: boolean;
 };
