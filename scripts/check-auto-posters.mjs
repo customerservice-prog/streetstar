@@ -16,6 +16,8 @@ assert.match(hero,/leadAccent/,"Hero emphasis should be based on video title, no
 assert.match(hero,/AutoPoster src=\{item.posterUrl\} variant="mini"/,"Sidebar videos must use automatic artwork");
 assert.match(cards,/AutoPoster src=\{story.posterUrl\} variant="card"/,"All gallery videos must use automatic artwork");
 assert.match(poster,/auto-poster-halo/,"Portrait videos need a branded wide background");
+assert.match(poster,/naturalWidth\/image.naturalHeight/,"Thumbnail layout should detect portrait versus landscape at runtime");
+assert.match(style,/auto-poster--wide/,"Landscape sources need automatic smart cropping");
 assert.match(style,/smart-feature \.v3-lead-copy/,"Featured text must be separate from the source frame");
 assert.match(style,/@media\(max-width:620px\)/,"Featured video must also work on mobile");
 assert.match(admin,/automaticThumbnailForVideo\(d.videoUrl, slug\)/,"New video posts must auto-resolve artwork");
