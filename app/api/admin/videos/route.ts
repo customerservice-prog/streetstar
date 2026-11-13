@@ -59,15 +59,22 @@ export async function POST(req: NextRequest) {
   const d = data.data;
   const slug = slugify(d.title) + "-" + randomBytes(4).toString("hex");
   const posterUrl = d.posterUrl || await automaticThumbnailForVideo(d.videoUrl, slug);
-  try {
-    const result = await database().query(
-      "INSERT INTO videos (slug, title, artist, description, category, video_url, poster_url, featured, status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id, slug",
-      [slug, d.title, d.artist, d.description, d.category, d.videoUrl, posterUrl, d.featured, d.status]
+  const client=await database().connect().catch(()=>null);
+  if(!client)return NextResponse.json({error:"Database unavailable."},{status:503});
+  try{
+    await client.query("BEGIN");
+    const shouldFeature=d.featured&&d.status==="published";
+    if(shouldFeature)await client.query("UPDATE videos SET featured=FALSE WHERE featured=TRUE");
+    const result=await client.query(
+      "INSERT INTO videos (slug,title,artist,description,category,video_url,poster_url,featured,status) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id,slug",
+      [slug,d.title,d.artist,d.description,d.category,d.videoUrl,posterUrl,shouldFeature,d.status]
     );
-    return NextResponse.json({ ok: true, video: { ...result.rows[0], posterUrl, artwork: d.posterUrl ? "custom" : "automatic" } }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Could not create video. Check database setup." }, { status: 503 });
-  }
+    await client.query("COMMIT");
+    return NextResponse.json({ok:true,video:{...result.rows[0],posterUrl,artwork:d.posterUrl?"custom":"automatic"}},{status:201});
+  }catch{
+    await client.query("ROLLBACK").catch(()=>{});
+    return NextResponse.json({error:"Could not create video. Check database setup."},{status:503});
+  }finally{client.release();}
 }
 
 export async function PATCH(req: NextRequest) {
