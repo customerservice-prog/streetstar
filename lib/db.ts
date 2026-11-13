@@ -32,6 +32,7 @@ type StoryRow = {
   video_url: string;
   poster_url: string;
   featured: boolean;
+  plays: number;
   created_at: Date | string;
 };
 
@@ -45,13 +46,14 @@ function mapStory(row: StoryRow): Story {
     videoUrl: row.video_url,
     posterUrl: row.poster_url,
     featured: row.featured,
+    plays: Number(row.plays || 0),
     createdAt: new Date(row.created_at).toISOString()
   };
 }
 
 export async function getStories(): Promise<Story[]> {
   if (!hasDatabase()) return demoStories;
-  const result = await database().query<StoryRow>("SELECT slug, title, artist, description, category, video_url, poster_url, featured, created_at FROM videos WHERE status = 'published' ORDER BY featured DESC, created_at DESC LIMIT 120");
+  const result = await database().query<StoryRow>("SELECT v.slug, v.title, v.artist, v.description, v.category, v.video_url, v.poster_url, v.featured, v.created_at, COALESCE((SELECT COUNT(*) FROM video_play_events p WHERE p.video_slug=v.slug),0)::integer AS plays FROM videos v WHERE v.status = 'published' ORDER BY v.featured DESC, v.created_at DESC LIMIT 120");
   return result.rows.length ? result.rows.map(mapStory) : demoStories;
 }
 

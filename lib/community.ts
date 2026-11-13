@@ -37,7 +37,10 @@ export function withGuestCookie(response: NextResponse, token: string, fresh: bo
   if (fresh) response.cookies.set(guestCookieName, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    // Embedded under bajomundotv.com, so a partitioned cookie is needed for
+    // guest reaction/like identity in browsers that restrict third-party cookies.
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    partitioned: process.env.NODE_ENV === "production",
     maxAge: COOKIE_SECONDS,
     path: "/"
   });

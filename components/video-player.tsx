@@ -1,9 +1,8 @@
 "use client";
 
-import { useRef, useState, type SyntheticEvent } from "react";
-import { ExternalLink, Play } from "lucide-react";
+import { useRef, type SyntheticEvent } from "react";
+import { ExternalLink } from "lucide-react";
 import type { Story } from "@/lib/content";
-import { PosterImage } from "@/components/poster-image";
 
 function embedUrl(url: string): string | null {
   try {
@@ -31,7 +30,6 @@ function embedUrl(url: string): string | null {
 }
 
 export function VideoPlayer({ story }: { story: Story }) {
-  const [ready, setReady] = useState(false);
   const playLogged=useRef(false);
   const trackingReady=useRef(false);
   const lastTick=useRef(0);
@@ -80,17 +78,18 @@ export function VideoPlayer({ story }: { story: Story }) {
   };
   return (
     <div className="player">
-      {!ready ? (
-        <button className="player-cover" onClick={() => {setReady(true);if(embed)trackPlay();}} aria-label={"Play " + story.title}>
-          <PosterImage src={story.posterUrl} alt="" />
-          <span className="player-tint" />
-          <span className="player-center"><Play size={34} fill="currentColor"/></span>
-          <span className="player-cover-label">HAZ CLIC PARA VER</span>
-        </button>
-      ) : embed ? (
-        <iframe src={embed + "?autoplay=1&rel=0"} title={story.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+      {embed ? (
+        // Load directly after clicking a video card: no second StreetStar play screen.
+        // Muted autoplay is allowed by modern browsers; viewers can enable sound in the player.
+        <iframe src={embed + "?autoplay=1&muted=1&mute=1&playsinline=1&rel=0"}
+          title={story.title} loading="eager" onLoad={trackPlay}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
       ) : direct ? (
-        <video controls autoPlay playsInline onPlay={()=>{lastTick.current=0;trackPlay();}} onTimeUpdate={onTimeUpdate} onPause={onPaused} onEnded={onPaused} poster={story.posterUrl || undefined} src={story.videoUrl}>Your browser does not support this video.</video>
+        <video controls autoPlay muted playsInline preload="auto"
+          onPlay={()=>{lastTick.current=0;trackPlay();}}
+          onTimeUpdate={onTimeUpdate} onPause={onPaused} onEnded={onPaused}
+          poster={story.posterUrl || undefined} src={story.videoUrl}>Your browser does not support this video.</video>
       ) : (
         <div className="external-player"><h3>PLAY ON THE ORIGINAL PLATFORM</h3><p>This video is hosted externally and cannot be embedded here.</p><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="button button-accent">OPEN VIDEO <ExternalLink size={17}/></a></div>
       )}
