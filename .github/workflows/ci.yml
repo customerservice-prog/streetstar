@@ -18,4 +18,5 @@ jobs:
       - run: npm run typecheck
       - run: node scripts/check-viral-ux.mjs
       - run: node scripts/check-auto-posters.mjs
+      - run: node scripts/check-admin-upload.mjs
       - run: npm run build
