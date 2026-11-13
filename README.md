@@ -91,3 +91,17 @@ YouTube thumbnail, supported Vimeo preview or stable public Descript page previe
 If a source image is unavailable, it generates a branded, video-specific fallback
 at `/api/auto-poster/{slug}`. Existing approved image files are kept unchanged.
 No external media is archived by this feature.
+
+## Viral admin: quick uploads and featured video
+
+Go to /admin on the StreetStar service. Quick Upload opens by default after signing in.
+
+1. Drag in MP4 or WebM files, or choose up to 12 at once.
+2. Edit the titles, choose a category and optional creator, select immediate publish or draft, and mark at most one video as featured.
+3. Upload files with retryable 4 MiB chunks, progress, a Stop button and optional browser-extracted video-frame thumbnails.
+4. Use Videos & Feature to search the library and change the large homepage featured video with one click.
+5. Add Video Link supports YouTube, Vimeo and Descript links without media storage.
+
+Direct uploads require the staged StreetStar Railway media volume mounted at /data/viral-media. The volume must be activated separately. Until it is mounted, the uploader refuses to write to ephemeral app disk. Existing Bajo Mundo TV music storage is not used.
+
+Current limits: 500 MiB per MP4/WebM video, 12 selections per batch, 2 MiB thumbnail. A 2 GiB volume has limited capacity; larger catalogs should use dedicated object storage and a CDN.
