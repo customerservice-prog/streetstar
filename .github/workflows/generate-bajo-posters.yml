@@ -1,46 +1,82 @@
-name: Generate authentic Bajo Mundo video thumbnails
+name: Generate permanent Bajo Mundo video thumbnails
 on:
   push:
     branches: [bajo-mundo-static-thumbnails]
-    paths:
-      - ".github/workflows/generate-bajo-posters.yml"
+    paths: [".github/workflows/generate-bajo-posters.yml"]
   workflow_dispatch:
 permissions:
   contents: write
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
           ref: bajo-mundo-static-thumbnails
-      - name: Retrieve original clip frame
-        env:
-          DOWNLOAD_URL: 'https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F6ee4f27b-58d5-42f2-afcb-282a75544713%2Fhls%3Fexpiration%3D1794666857945%26signature%3Db31c97eb25c1184dac8ee91af514928b7a10c809bdbb99b14ab17f9f5b0b0cc9&filename=El+Alfa+habla+sobre+lo+ocurrido+en+Miami.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794663258&signature=547503afa3a460ad7ecc26d95082ed2aab6c634167350670c2e201893dd09c28'
+      - name: Create original video frame thumbnails
+        shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet imageio-ffmpeg pillow
+          python -m pip install --quiet --upgrade pillow requests imageio-ffmpeg
+          export FFMPEG=$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')
           python - <<'PY'
-          import os,requests
-          url=os.environ["DOWNLOAD_URL"]
-          with requests.get(url,timeout=80,stream=True) as r:
-              print("Video response",r.status_code,r.headers.get("content-type"))
-              if r.status_code!=200:
-                  print("Error excerpt",r.text[:500]);r.raise_for_status()
-              with open("/tmp/clip.mp4","wb") as out:
-                  for piece in r.iter_content(chunk_size=1024*1024):
-                      if piece:out.write(piece)
-          print("Video bytes",os.path.getsize("/tmp/clip.mp4"))
+          import json,io,os,subprocess,sys,requests
+          from PIL import Image,ImageOps,ImageFilter,ImageEnhance,ImageStat
+          from pathlib import Path
+          urls = {"1":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F01154d8e-9c21-4a99-89d5-259b99ca8a3e%2Fhls%3Fexpiration%3D1794671993496%26signature%3D5d48d6dec65cdcc6d8f511ff2cd5574d149e21aaf9cd00edd73e50609bfdabb3&filename=Arc+ngel+habla+sobre+los+mexicanos.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=bb4ad6c90189c61fe8f92d00ff0b95d07f1ba963f1a0abe142890b6400de6180","2":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F6ee4f27b-58d5-42f2-afcb-282a75544713%2Fhls%3Fexpiration%3D1794671993532%26signature%3D208b312777da108dfa1db720f21945dc6a94377e710b93de9c5c04966ff7318e&filename=El+Alfa+habla+sobre+lo+ocurrido+en+Miami.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=3bcd1e071f78ba5c8508a1a6a66d8c57c2125a4df74f5e2e3682276e99a6d38d","3":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F8c001f62-d17e-4ec6-8827-9a71bb0931ac%2Fhls%3Fexpiration%3D1794671993523%26signature%3D48b94dff5e65716be6a00f94ae984ea0917c372cb5c07901df0630e9a55ea708&filename=Conversaci+n+sobre+Anuel+AA+y+El+Peje+24.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=2c260da16c7e005204dd8663904f33b6a6a78d159d1ba4581c72e6082955e8ba","4":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F723c3371-f5ee-4667-b940-3063d395097e%2Fhls%3Fexpiration%3D1794671993491%26signature%3D7b4675ee53bb308bc0eefaeb2804f99459c697d0ed53b2d9a262038ab76afa84&filename=La+Mami+Jordan+responde+a+Nfasis.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=2420de72ccb57d76ba6e22297cf42ca524b121520ca7514fa66b3fcbd458f45c","5":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2Fffb20505-148e-4530-8b44-2cba2b0cc90a%2Fhls%3Fexpiration%3D1794671993577%26signature%3D501d47dc55c43c19386abc3edad0a6b85053e00a49e8cfd53a03f2b4cfff25e9&filename=La+Mami+Jordan+vende+sancocho.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=1fcea2bb00d6abf1d5328bf663b781bb7045cb2c81521cfd634476edbe3129af","6":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F6233712d-69ef-4105-ab2a-6de39d063a0e%2Fhls%3Fexpiration%3D1794671993817%26signature%3D6ca86f7754426cfca1f3a9a960a4673d23fb3c9060b22355ee4f9f5835a71f3f&filename=Mami+Kim+env+a+un+mensaje+entre+l+grimas.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=8d91a7d4ee411c9744629184de22b8dab90896f6e4fd4b62d90589ccc680d2e9","7":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2F6abd21ba-13d0-43f2-815d-458cf1639497%2Fhls%3Fexpiration%3D1794671993825%26signature%3Def386f4c9093e0ec8e918efadd0fe726dd7cfa0a5999dc999d8354f385279a08&filename=Nfasis+responde+a+Qu+mico+Ultramega.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=dacfb9c19e81f66573bf55cf8273c4e2ba2265f37dfc507d49232d9ed38dcafc","8":"https://media.descriptusercontent.com/v3/proxy/remux?url=https%3A%2F%2Fapi.descript.com%2Fv2%2Fpublished_projects%2Fdad0e82d-e315-4e0d-a286-254634011ce7%2Fhls%3Fexpiration%3D1794671993850%26signature%3De2fd69c2e083880144bb777f1e5c0d6fa2ae86053cf8ee1907bf6ad1d6dfed11&filename=Youngchimi+habla+en+un+vivo+con+El+Rey+de+la+City.mp4&mediaCacheBucketName=production-273614-media-cache&expiration=1794668394&signature=23f1fab43c0c815cd39c22a237b80cc0c4ed8f4aacce51424f446dda30042cf6"}
+          durations = {1:11.98,2:117.7,3:185.7,4:20.48,5:49.27,6:159.66,7:20.2,8:298.4}
+          ffmpeg = os.environ["FFMPEG"]
+          out=Path("public/posters");out.mkdir(parents=True,exist_ok=True)
+          for key,url in urls.items():
+              i=int(key);video=Path(f"/tmp/video-{i}.mp4")
+              print(f"Retrieving original video {i}/8...",flush=True)
+              with requests.get(url,timeout=90,stream=True) as r:
+                  if r.status_code!=200: raise RuntimeError(f"Download {i} HTTP {r.status_code}: {r.text[:180]}")
+                  with video.open("wb") as f:
+                      for chunk in r.iter_content(1048576):
+                          if chunk:f.write(chunk)
+              print(f"Clip {i} bytes: {video.stat().st_size}",flush=True)
+              candidates=[]
+              for j,p in enumerate([0.10,0.23,0.40,0.58]):
+                  timestamp=max(0.45,round(durations[i]*p,2))
+                  jpg=Path(f"/tmp/frame-{i}-{j}.jpg")
+                  try:
+                      subprocess.run([ffmpeg,"-hide_banner","-loglevel","error","-y","-ss",str(timestamp),"-i",str(video),"-frames:v","1","-q:v","3",str(jpg)],check=True,timeout=65)
+                      im=Image.open(jpg).convert("RGB")
+                      st=ImageStat.Stat(ImageOps.grayscale(im))
+                      mean=st.mean[0];std=st.stddev[0]
+                      score=std+mean*0.30-(40 if mean<12 else 0)
+                      candidates.append((score,im,timestamp,mean,std))
+                  except Exception as e:print(f"Candidate {i} at {timestamp}s failed: {str(e)[:120]}",flush=True)
+              if not candidates:raise RuntimeError(f"No usable video frame for {i}")
+              score,chosen,timestamp,mean,std=max(candidates,key=lambda x:x[0])
+              bg=ImageOps.fit(chosen,(800,450),method=Image.Resampling.LANCZOS)
+              bg=ImageEnhance.Brightness(bg.filter(ImageFilter.GaussianBlur(19))).enhance(0.44)
+              fg=ImageOps.contain(chosen,(800,450),method=Image.Resampling.LANCZOS)
+              bg.paste(fg,((800-fg.width)//2,(450-fg.height)//2))
+              name=out/f"video-{i}.jpg"
+              bg.save(name,"JPEG",quality=82,subsampling=0,optimize=True)
+              print(f"POSTER {i}: {name.stat().st_size} bytes at {timestamp}s, brightness {mean:.1f}, contrast {std:.1f}",flush=True)
+              video.unlink(missing_ok=True)
           PY
-          mkdir -p public/posters
-          FFMPEG=$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')
-          "$FFMPEG" -hide_banner -loglevel error -y -ss 2 -i /tmp/clip.mp4 -frames:v 1 -vf "scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2" -q:v 4 public/posters/video-2.jpg
-          file public/posters/video-2.jpg
-      - name: Commit poster
+      - name: Verify eight distinct static posters and remove expiring workflow
+        shell: bash
         run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          for i in range(1,9):
+              p=Path(f"public/posters/video-{i}.jpg")
+              assert p.is_file() and p.stat().st_size > 2500, f"Invalid poster {i}"
+              image=Image.open(p)
+              assert image.size==(800,450), f"Wrong poster dimensions {i}"
+          print("All eight thumbnails verified")
+          PY
+          rm -f .github/workflows/generate-bajo-posters.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/posters/video-2.jpg
-          git commit -m "Add authentic El Alfa video poster"
+          git add public/posters/video-*.jpg .github/workflows/generate-bajo-posters.yml
+          git commit -m "Add eight permanent Bajo Mundo video frame thumbnails"
           git push origin HEAD:refs/heads/bajo-mundo-static-thumbnails
