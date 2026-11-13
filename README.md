@@ -76,3 +76,18 @@ This repository is for StreetStar only. No code, database, branding, deployment,
 - `/admin/comments` supports review, hiding, suspicious link indicators, abuse reports, and temporary network or account restrictions. Blocks are best effort and network bans can affect shared IPs.
 - Watch-time reports are browser estimates for HTML5-hosted videos only. Progress is capped and throttled server-side, and can still be manipulated by clients. Do not treat these as audited media impressions.
 - There are no production advertising payments, creator revenue shares, automatic payouts, verified rights contracts or copyright detection. Do not publish monetization promises until these are safely implemented.
+
+
+## Automatic premium thumbnails
+
+StreetStar/Bajo Mundo Viral now styles every published poster automatically as an
+editorial image. Portrait reels retain their frame against a blurred widescreen
+background, and landscape frames receive an aspect-aware crop. The FEATURE toggle
+turns a selected video into the large cinematic homepage cover with an automatically
+highlighted headline. It does not generate a synthetic portrait of the subject.
+
+When an admin leaves the optional poster URL blank, the system tries a public
+YouTube thumbnail, supported Vimeo preview or stable public Descript page preview.
+If a source image is unavailable, it generates a branded, video-specific fallback
+at `/api/auto-poster/{slug}`. Existing approved image files are kept unchanged.
+No external media is archived by this feature.
