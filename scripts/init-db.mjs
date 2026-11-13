@@ -24,7 +24,7 @@ for (let attempt = 1; attempt <= 8; attempt++) {
       if (!/^https:\/\/share\.descript\.com\/view\/[A-Za-z0-9_-]+$/.test(clip.videoUrl))
         throw new Error("Invalid video host URL for " + clip.slug);
       await client.query(
-        "INSERT INTO videos(slug,title,artist,description,category,video_url,poster_url,featured,status,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'published',$9) ON CONFLICT(slug) DO NOTHING",
+        "INSERT INTO videos(slug,title,artist,description,category,video_url,poster_url,featured,status,created_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'published',$9) ON CONFLICT(slug) DO UPDATE SET poster_url=EXCLUDED.poster_url WHERE videos.video_url=EXCLUDED.video_url AND videos.poster_url LIKE 'https://share.descript.com/view/%'",
         [clip.slug,clip.title,clip.artist,clip.description,clip.category,clip.videoUrl,clip.posterUrl,Boolean(clip.featured),clip.createdAt]
       );
     }

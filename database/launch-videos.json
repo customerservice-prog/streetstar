@@ -8,7 +8,7 @@
     "featured": false,
     "createdAt": "2026-11-13T12:54:00.000Z",
     "videoUrl": "https://share.descript.com/view/Hv5l5Nq8Szq",
-    "posterUrl": "https://share.descript.com/view/Hv5l5Nq8Szq"
+    "posterUrl": "/posters/video-1.jpg"
   },
   {
     "slug": "el-alfa-habla-sobre-miami",
@@ -19,7 +19,7 @@
     "featured": true,
     "createdAt": "2026-11-13T13:01:00.000Z",
     "videoUrl": "https://share.descript.com/view/xs2fzlyBKnK",
-    "posterUrl": "https://share.descript.com/view/xs2fzlyBKnK"
+    "posterUrl": "/posters/video-2.jpg"
   },
   {
     "slug": "anuel-aa-el-peje-24-conversacion",
@@ -30,7 +30,7 @@
     "featured": false,
     "createdAt": "2026-11-13T13:00:00.000Z",
     "videoUrl": "https://share.descript.com/view/NT1PIRdcE7F",
-    "posterUrl": "https://share.descript.com/view/NT1PIRdcE7F"
+    "posterUrl": "/posters/video-3.jpg"
   },
   {
     "slug": "mami-jordan-responde-a-nfasis",
@@ -41,7 +41,7 @@
     "featured": false,
     "createdAt": "2026-11-13T12:56:00.000Z",
     "videoUrl": "https://share.descript.com/view/jNjpTMx0rBb",
-    "posterUrl": "https://share.descript.com/view/jNjpTMx0rBb"
+    "posterUrl": "/posters/video-4.jpg"
   },
   {
     "slug": "mami-jordan-vende-sancocho",
@@ -52,7 +52,7 @@
     "featured": false,
     "createdAt": "2026-11-13T12:57:00.000Z",
     "videoUrl": "https://share.descript.com/view/5SjDkaQWeLy",
-    "posterUrl": "https://share.descript.com/view/5SjDkaQWeLy"
+    "posterUrl": "/posters/video-5.jpg"
   },
   {
     "slug": "mami-kim-mensaje-entre-lagrimas",
@@ -63,7 +63,7 @@
     "featured": false,
     "createdAt": "2026-11-13T12:58:00.000Z",
     "videoUrl": "https://share.descript.com/view/mCNRMS8OEZY",
-    "posterUrl": "https://share.descript.com/view/mCNRMS8OEZY"
+    "posterUrl": "/posters/video-6.jpg"
   },
   {
     "slug": "nfasis-responde-a-quimico-ultramega",
@@ -74,7 +74,7 @@
     "featured": false,
     "createdAt": "2026-11-13T12:55:00.000Z",
     "videoUrl": "https://share.descript.com/view/d3R9e0qqvDd",
-    "posterUrl": "https://share.descript.com/view/d3R9e0qqvDd"
+    "posterUrl": "/posters/video-7.jpg"
   },
   {
     "slug": "youngchimi-rey-de-la-city-vivo",
@@ -85,6 +85,6 @@
     "featured": false,
     "createdAt": "2026-11-13T12:59:00.000Z",
     "videoUrl": "https://share.descript.com/view/HoqtjMOmJEe",
-    "posterUrl": "https://share.descript.com/view/HoqtjMOmJEe"
+    "posterUrl": "/posters/video-8.jpg"
   }
 ]
