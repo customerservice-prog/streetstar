@@ -196,3 +196,17 @@ CREATE TABLE IF NOT EXISTS video_watch_progress (
   PRIMARY KEY(video_slug,visitor_hash,viewed_on)
 );
 CREATE INDEX IF NOT EXISTS video_watch_progress_day_idx ON video_watch_progress(viewed_on DESC,video_slug);
+
+
+-- Owner-only resumable upload sessions. Temporary binary files live in the
+-- separately mounted StreetStar volume, never in the app image or PostgreSQL.
+CREATE TABLE IF NOT EXISTS viral_media_uploads (
+  id UUID PRIMARY KEY,
+  filename VARCHAR(220) NOT NULL,
+  extension VARCHAR(5) NOT NULL CHECK (extension IN ('mp4','webm')),
+  size_bytes BIGINT NOT NULL CHECK (size_bytes BETWEEN 1 AND 524288000),
+  received_bytes BIGINT NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS viral_media_uploads_created_idx ON viral_media_uploads(created_at);

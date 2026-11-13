@@ -36,7 +36,8 @@ export function VideoPlayer({ story }: { story: Story }) {
   const watchBuffer=useRef(0);
   const reportBusy=useRef(false);
   const embed = embedUrl(story.videoUrl);
-  const direct = /^https?:\/\/[^\s]+\.(mp4|webm|ogg)(\?[^\s]*)?$/i.test(story.videoUrl);
+  const direct = /^https?:\/\/[^\s]+\.(mp4|webm|ogg)(\?[^\s]*)?$/i.test(story.videoUrl)
+    || /^\/api\/media\/[a-z0-9-]+\.(mp4|webm)$/i.test(story.videoUrl);
   const trackPlay=()=>{
     if(playLogged.current)return;
     playLogged.current=true;
