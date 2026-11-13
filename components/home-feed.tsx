@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { categories, categoryLabel, type Story } from "@/lib/content";
 import { VideoCard } from "@/components/video-card";
-import { PosterImage } from "@/components/poster-image";
+import { AutoPoster } from "@/components/auto-poster";
 import { TrendingPreview } from "@/components/trending-preview";
 import type { TrendingRow } from "@/lib/trending";
 
@@ -27,6 +27,11 @@ export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],tota
   useEffect(()=>{setSearch(initialSearch);},[initialSearch]);
   useEffect(()=>{setSort(initialSort);},[initialSort]);
   const lead=spotlight.find(item=>item.featured)||spotlight[0];
+  const words=lead?.title.trim().split(/\s+/) || [];
+  // The art direction is generated from each video's headline, not hardcoded
+  // to El Alfa. Use a short highlighted ending with safe fallback for short titles.
+  const leadHeading=words.length>=5 ? words.slice(0,-2).join(" ") : lead?.title || "";
+  const leadAccent=words.length>=5 ? words.slice(-2).join(" ") : "";
   const nextUp=spotlight.filter(item=>item.slug!==lead?.slug).slice(0,2);
   // Server-side filtering and 24-item pagination: no thousands of videos in browser memory.
   const filtered=stories;
@@ -53,8 +58,8 @@ export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],tota
         </div>
         <div className="v3-front-grid">
           {lead ? (
-            <Link href={"/watch/" + lead.slug} className="v3-lead-story">
-              <PosterImage src={lead.posterUrl} alt="" loading="eager" />
+            <Link href={"/watch/" + lead.slug} className="v3-lead-story smart-feature">
+              <AutoPoster src={lead.posterUrl} variant="feature" loading="eager" />
               <span className="v3-lead-shade" />
               <span className="v3-lead-grain" aria-hidden="true"/>
               <span className="v3-lead-top">
@@ -64,7 +69,7 @@ export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],tota
               <span className="v3-lead-play" aria-hidden="true"><Play size={24} fill="currentColor" /></span>
               <span className="v3-lead-copy">
                 <span className="v3-lead-category"><span>{categoryLabel(lead.category)}</span> / {lead.artist || "Bajo Mundo TV Viral"} {lead.isDemo && <span className="demo-pill">DEMO</span>}</span>
-                <span className="v3-lead-title">{lead.title}</span>
+                <span className="v3-lead-title">{leadHeading}{leadAccent && <strong className="v3-lead-title-accent">{leadAccent}</strong>}</span>
                 <span className="v3-lead-link"><span><Play size={16} fill="currentColor" /></span> VER VIDEO DESTACADO <ArrowUpRight size={18}/></span>
               </span>
               <span className="v3-lead-corner" aria-hidden="true">B / M</span>
@@ -86,7 +91,7 @@ export function HomeFeed({ stories,spotlight,trending=[],trendingStories=[],tota
               <div className="v3-up-next-heading"><span><Flame size={15}/> EN LA MIRA</span><span>{String(nextUp.length).padStart(2, "0")} PICKS</span></div>
               {nextUp.map((item, index) => (
                 <Link href={"/watch/" + item.slug} className="v3-next-item" key={item.slug}>
-                  <span className="v3-next-thumb"><PosterImage src={item.posterUrl} alt="" /><span className="v3-next-play"><Play size={14} fill="currentColor" /></span></span>
+                  <span className="v3-next-thumb"><AutoPoster src={item.posterUrl} variant="mini" /><span className="v3-next-play"><Play size={14} fill="currentColor" /></span></span>
                   <span className="v3-next-copy">
                     <span className="v3-next-cat">{categoryLabel(item.category)} {item.isDemo && <span className="demo-pill">DEMO</span>}</span>
                     <strong>{item.title}</strong>
