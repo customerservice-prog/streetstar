@@ -10,6 +10,7 @@ const admin=read("app/api/admin/videos/route.ts");
 const resolver=read("lib/automatic-thumbnail.ts");
 const generator=read("app/api/auto-poster/[slug]/route.ts");
 const layout=read("app/layout.tsx");
+const bootstrap=read("scripts/init-db.mjs");
 
 assert.match(hero,/AutoPoster src=\{lead.posterUrl\} variant="feature"/,"Homepage hero must use automatic artwork");
 assert.match(hero,/leadAccent/,"Hero emphasis should be based on video title, not hardcoded person");
@@ -30,4 +31,5 @@ assert.match(generator,/image\/svg\+xml/,"Generated branded covers must be image
 assert.match(generator,/function xml\(/,"Video titles must be escaped before SVG generation");
 assert.match(layout,/\.\/auto-posters\.css/,"Premium styles must be enabled in the application");
 
+assert.match(bootstrap,/UPDATE videos SET poster_url/,"Existing published videos must receive a fallback poster automatically");
 console.log("Automatic editorial thumbnail, source selection, mobile and safety checks passed.");
