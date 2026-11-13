@@ -29,6 +29,9 @@ for (let attempt = 1; attempt <= 8; attempt++) {
       );
     }
     if (launchVideos.length) console.log("Bajo Mundo TV Viral launch catalog verified: " + launchVideos.length + " clips.");
+    // Give all older published entries missing a poster their own dynamic cover.
+    // Never overwrite thumbnails that were supplied or extracted successfully.
+    await client.query("UPDATE videos SET poster_url = '/api/auto-poster/' || slug WHERE status = 'published' AND poster_url = ''");
     ready = true;
     console.log("StreetStar database schema verified.");
     break;
