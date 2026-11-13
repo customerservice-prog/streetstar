@@ -10,6 +10,7 @@ import "./analytics.css";
 import "./bajo-mundo-viral.css";
 import "./auto-posters.css";
 import "./pagination.css";
+import "./admin-upload.css";
 
 export const metadata: Metadata = {
   title: { default: "Bajo Mundo TV Viral | La Calle Tiene Su Canal", template: "%s | Bajo Mundo TV Viral" },
