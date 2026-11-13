@@ -10,29 +10,47 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
           ref: bajo-mundo-static-thumbnails
-      - name: Download poster frame from published source
+      - name: Retrieve video frame thumbnail from Descript Open Graph
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --quiet --upgrade yt-dlp imageio-ffmpeg
-          FFMPEG=$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')
-          "$FFMPEG" -hide_banner -version | head -n 1
+          python -m pip install --quiet requests beautifulsoup4 pillow
           mkdir -p public/posters
-          yt-dlp -v --ffmpeg-location "$FFMPEG" --no-playlist -f "bestvideo+bestaudio/best" --merge-output-format mp4 -o "/tmp/clip.%(ext)s" "https://share.descript.com/view/xs2fzlyBKnK"
-          find /tmp -maxdepth 1 -name "clip.*" -printf "%f %s bytes\\n"
-          "$FFMPEG" -y -ss 1 -i /tmp/clip.mp4 -frames:v 1 -vf "scale=640:360:force_original_aspect_ratio=decrease,pad=640:360:(ow-iw)/2:(oh-ih)/2" -q:v 4 public/posters/video-2.jpg
-          file public/posters/video-2.jpg
-      - name: Commit generated poster
+          python - <<'PY'
+          import requests,io
+          from bs4 import BeautifulSoup
+          from PIL import Image
+          u="https://share.descript.com/view/xs2fzlyBKnK"
+          r=requests.get(u,timeout=30,headers={"User-Agent":"facebookexternalhit/1.1"})
+          print("Page response",r.status_code,"length",len(r.content))
+          r.raise_for_status()
+          soup=BeautifulSoup(r.text,"html.parser")
+          tags=[]
+          for m in soup.select("meta"):
+              key=m.get("property") or m.get("name")
+              if key and ("image" in key or "thumbnail" in key):tags.append((key,m.get("content")))
+          print("Image metadata",tags)
+          assert tags,"No social image metadata"
+          src=next((v for k,v in tags if k in ("og:image","twitter:image") and v),None)
+          assert src,"No thumbnail URL"
+          image=requests.get(src,timeout=30)
+          print("Poster response",image.status_code,image.headers.get("Content-Type"),"bytes",len(image.content))
+          image.raise_for_status()
+          im=Image.open(io.BytesIO(image.content)).convert("RGB")
+          im.thumbnail((960,540))
+          im.save("public/posters/video-2.jpg",quality=78,optimize=True)
+          print("Poster saved",im.size)
+          PY
+      - name: Commit poster
         shell: bash
         run: |
-          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add public/posters/video-2.jpg
-          git commit -m "Generate real poster frame for El Alfa clip"
+          git commit -m "Add real El Alfa video thumbnail"
           git push origin HEAD:refs/heads/bajo-mundo-static-thumbnails
