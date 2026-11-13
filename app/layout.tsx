@@ -8,6 +8,7 @@ import "./community.css";
 import "./member.css";
 import "./analytics.css";
 import "./bajo-mundo-viral.css";
+import "./auto-posters.css";
 import "./pagination.css";
 
 export const metadata: Metadata = {
