@@ -42,7 +42,7 @@ assert.match(storage,/MAX_VIDEO_BYTES=500\*1024\*1024/,"Bound file sizes");
 assert.match(schema,/viral_media_uploads/,"Pending uploads are tracked in durable database");
 assert.match(adminVideo,/export async function GET/,"Library needs paginated API");
 assert.match(adminVideo,/UPDATE videos SET featured=FALSE/,"URL-based videos must follow the same feature rules");
-assert.match(player,/\/api\/media/,"Local video player must support internal media");
+assert.ok(player.includes("const direct") && player.includes("api\\/media"),"Local player supports uploaded media");
 assert.match(docker,/start-streetstar.sh/,"Container must initialize the attached media volume");
 assert.match(startup,/exec su -p/,"Web app should run unprivileged after volume preparation");
 assert.match(auth,/partitioned/,"Owner sessions must work inside iframe");
