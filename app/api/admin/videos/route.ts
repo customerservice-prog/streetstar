@@ -48,13 +48,23 @@ export async function PATCH(req: NextRequest) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const data = updateSchema.safeParse(await req.json().catch(() => null));
   if (!data.success) return NextResponse.json({ error: "Invalid update." }, { status: 400 });
+  const pool=database();
+  const client=await pool.connect().catch(()=>null);
+  if(!client)return NextResponse.json({error:"Database unavailable."},{status:503});
   try {
-    await database().query(
-      "UPDATE videos SET status = COALESCE($1, status), featured = COALESCE($2, featured) WHERE id = $3",
+    await client.query("BEGIN");
+    // There is exactly one homepage feature at a time, chosen by the owner.
+    if(data.data.featured===true)
+      await client.query("UPDATE videos SET featured = FALSE WHERE featured = TRUE AND id <> $1",[data.data.id]);
+    const result=await client.query(
+      "UPDATE videos SET status = COALESCE($1, status), featured = COALESCE($2, featured) WHERE id = $3 RETURNING id",
       [data.data.status ?? null, data.data.featured ?? null, data.data.id]
     );
+    if(!result.rowCount)throw new Error("Video not found.");
+    await client.query("COMMIT");
     return NextResponse.json({ ok: true });
   } catch {
+    await client.query("ROLLBACK").catch(()=>{});
     return NextResponse.json({ error: "Could not update video." }, { status: 503 });
-  }
+  } finally { client.release(); }
 }
