@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, CalendarDays, ExternalLink, MessageSquare, Star } from "lucide-react";
 import { VideoPlayer } from "@/components/video-player";
 import { VideoCard } from "@/components/video-card";
-import { getStories } from "@/lib/db";
+import { getStory, getRelatedStories } from "@/lib/db";
 import { storyDate, categoryLabel } from "@/lib/content";
 import { ShareButton } from "@/components/share-button";
 import { VideoCommunity } from "@/components/video-community";
@@ -16,8 +16,7 @@ type Props = { params: Promise<{ slug: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const stories = await getStories();
-  const story = stories.find(item => item.slug === slug);
+  const story = await getStory(slug);
   return story ? { title: story.title, description: story.description, robots: story.isDemo ? { index: false, follow: false } : undefined, openGraph: { images: story.posterUrl && !story.posterUrl.includes("share.descript.com") ? [story.posterUrl] : [] } } : { title: "Video not found" };
 }
 
@@ -26,7 +25,7 @@ export default async function WatchPage({ params }: Props) {
   const stories = await getStories();
   const story = stories.find(item => item.slug === slug);
   if (!story) notFound();
-  const related = stories.filter(item => item.slug !== story.slug).sort((a,b) => Number(b.category === story.category) - Number(a.category === story.category)).slice(0, 3);
+  const related = await getRelatedStories(story, 3);
   return (
     <main className="watch-layout container">
       <div className="watch-breadcrumb"><Link href="/"><ArrowLeft size={16}/> VOLVER A VIDEOS</Link><span>/</span><span>{categoryLabel(story.category)}</span></div>
