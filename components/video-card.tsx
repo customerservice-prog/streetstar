@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Eye, MessageSquare, Play, Star } from "lucide-react";
 import { storyDate, categoryLabel, type Story } from "@/lib/content";
-import { PosterImage } from "@/components/poster-image";
+import { AutoPoster } from "@/components/auto-poster";
 import { ShareButton } from "@/components/share-button";
 
 export function VideoCard({ story, index = 0, compact = false }: { story: Story; index?: number; compact?: boolean }) {
@@ -12,7 +12,7 @@ export function VideoCard({ story, index = 0, compact = false }: { story: Story;
     <article className={compact ? "video-card video-card-compact" : "video-card video-card-premium"}>
       <Link href={href} className="video-card-main" aria-label={"Ver video: "+story.title}>
         <div className="card-art">
-          <PosterImage src={story.posterUrl} alt="" />
+          <AutoPoster src={story.posterUrl} variant="card" />
           <span className="card-rank">{String(index + 1).padStart(2, "0")}<span className="card-rank-slash"> / BM</span></span>
           <span className="card-play" aria-hidden="true"><Play size={18} fill="currentColor" /></span>
           <span className="card-category">{categoryLabel(story.category)}</span>
