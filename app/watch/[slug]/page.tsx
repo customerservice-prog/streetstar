@@ -36,7 +36,7 @@ export default async function WatchPage({ params }: Props) {
           <h1>{story.title}</h1>
           <div className="watch-meta"><span>{story.artist || "Bajo Mundo TV Viral"}</span><span>•</span><span><CalendarDays size={14}/> {storyDate(story.createdAt)}</span><span>•</span><span>{story.category}</span></div>
           <VideoPlayer story={story}/>
-          <div className="watch-actions"><span>EL VIDEO.</span><ShareButton/><VideoSave slug={story.slug}/><a href="#comments" className="watch-share"><MessageSquare size={16}/> COMENTARIOS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">FUENTE DEL VIDEO <ExternalLink size={15}/></a></div>
+          <div className="watch-actions"><span>COMPARTE Y OPINA.</span><ShareButton slug={story.slug} title={story.title}/><VideoSave slug={story.slug}/><a href="#comments" className="watch-share"><MessageSquare size={16}/> IR A COMENTARIOS</a><a href={story.videoUrl} target="_blank" rel="noopener noreferrer" className="watch-source">FUENTE DEL VIDEO <ExternalLink size={15}/></a></div>
           <p className="watch-description">{story.description || "An original Bajo Mundo TV Viral feature."}</p>
           {story.isDemo && <p className="demo-notice">This is demonstration content. The image and sample player are illustrative and do not represent a real news story or music release.</p>}
           <VideoCommunity slug={story.slug} />
